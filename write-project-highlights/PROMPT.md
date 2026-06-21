@@ -16,6 +16,8 @@ Do not list facts just because they exist in the project. Test file counts, test
 
 Highlights should be relatively independent from each other. If two candidate points describe the same problem chain, same technical theme, same workflow, or one is only a supporting step of the other, merge them into one stronger bullet instead of splitting them across multiple bullets.
 
+Prefer architecture and excellent technical points over operational details. The output should make an interviewer want to ask follow-up questions about design choices, boundaries, tradeoffs, performance, reliability, scalability, or engineering abstraction.
+
 ## Input You May Receive
 
 The user may provide any mix of:
@@ -37,11 +39,23 @@ If key information is missing, continue with reasonable assumptions. Ask follow-
 
 Before writing, rank candidate points by interview value:
 
-1. High value: performance optimization, stability improvement, architecture design, core workflow design, async/queue/lock/transaction consistency, RAG/Agent workflow design, observability, fault isolation, cost reduction, automation with measurable efficiency gains, business conversion or accuracy improvement.
-2. Medium value: reusable component design, configuration platform, integration with external systems, data pipeline, permission/rule engine, deployment or operations improvement with clear impact.
-3. Low value: only adding tests, listing many files/modules, routine CRUD, UI page completion, dependency upgrades, documentation, simple configuration, generic "used framework X".
+1. High value: architecture design, core workflow orchestration, runtime extensibility, graph/DAG modeling, configuration-driven assembly, async/queue/lock/transaction consistency, RAG/Agent workflow design, performance optimization, stability improvement, observability architecture, fault isolation, cost reduction, automation with measurable efficiency gains, business conversion or accuracy improvement.
+2. Medium value: reusable component design, integration with external systems, data pipeline, permission/rule engine, deployment or operations improvement with clear impact.
+3. Low value: standalone failure strategy, only adding tests, listing many files/modules, routine CRUD, UI page completion, dependency upgrades, documentation, simple configuration, generic "used framework X".
 
 Drop low-value points unless the user explicitly asks to keep them. If a low-value fact can support a stronger point, fold it into that stronger point instead of making it a standalone bullet.
+
+Do not turn `failure strategy`, `exception handling`, `fallback`, or `retry` into a standalone highlight unless it is clearly part of a larger reliability architecture with production impact. Usually merge it into execution lifecycle governance, observability, concurrency control, or high-availability design.
+
+For one project, cover multiple modules or technical angles. Avoid writing all bullets around the same lifecycle or same abstraction. Prefer selecting 3-5 different dimensions such as:
+
+- Core architecture: execution engine, orchestration, DAG/graph modeling, plugin extension, or runtime assembly.
+- Data and intelligence: RAG, memory, context injection, retrieval quality, model calling, prompt/config management, or result evaluation.
+- Performance and concurrency: async processing, batching, queue isolation, locking, idempotency, backpressure, latency optimization, or resource reuse.
+- Reliability and observability: trace design, metric design, fault isolation, degradation, alerting, replay, or troubleshooting.
+- Engineering platform: configuration platform, deployment pipeline, environment isolation, reusable SDK/component, integration boundary, or developer experience.
+
+When reading a codebase or raw project notes, first identify the major modules and their architectural value, then choose the strongest non-overlapping angles. Do not simply summarize every visible module.
 
 Group tightly related work before writing:
 
@@ -79,8 +93,8 @@ Title rules:
 
 Length rules:
 
-- Each bullet should usually be 90-180 Chinese characters.
-- Use longer bullets for complex technical work, but avoid bloated paragraphs.
+- Each bullet should usually be 120-260 Chinese characters.
+- Use longer bullets for complex architecture or performance work when needed, but avoid bloated paragraphs.
 - Do not produce one-line shallow bullets that only say what was done.
 
 ## Default Output Format
@@ -110,17 +124,19 @@ Prefer fewer, stronger, non-overlapping bullets over many fragmented bullets. If
 - Keep language natural and resume-oriented. Avoid marketing tone, empty adjectives, and overly dense technical jargon.
 - Use Chinese punctuation and numbering style matching the user's sample when the surrounding content is Chinese.
 - Mention frameworks and infrastructure in `技术架构`; in bullets, focus on why the work mattered and how the design solved the problem.
+- Show technical depth by explaining design boundaries, abstraction method, data flow, execution flow, consistency model, extensibility point, performance bottleneck, or reliability tradeoff.
 
 ## What Not To Write
 
 Avoid standalone bullets like:
 
 - `测试治理：项目包含 N 个测试文件、N 个测试用例，覆盖多个模块，保证核心契约稳定。`
+- `组件失败策略设计：围绕多个组件配置 abort、retry、empty_result 等策略，避免旁路故障影响主流程。`
 - `页面开发：完成某某页面和某某组件开发。`
 - `框架接入：使用某框架完成某功能。`
 - `模块梳理：整理多个模块并补充文档。`
 
-These are usually weak from an interviewer's perspective. Rewrite them only if you can connect them to concrete outcomes, such as fewer regressions, faster release validation, lower troubleshooting cost, or higher conversion/accuracy/stability.
+These are usually weak from an interviewer's perspective. Rewrite them only if you can connect them to a bigger technical topic, such as execution lifecycle design, high-availability governance, performance optimization, fewer regressions, faster release validation, lower troubleshooting cost, or higher conversion/accuracy/stability.
 
 ## Quantification Heuristics
 
@@ -152,6 +168,8 @@ Before responding, verify:
 - Each `核心职责` starts with a meaningful small title.
 - Each bullet is substantial enough to be discussed in an interview.
 - Each bullet is relatively independent; strongly related actions are merged into one complete point.
+- The set of bullets covers multiple modules or technical angles, not just one repeated theme.
+- Standalone failure strategy, fallback, and exception-handling bullets are removed or merged into stronger architecture/reliability points.
 - Each bullet maps to STAR logic.
 - Low-value inventory facts are removed or folded into stronger points.
 - At least one highlight contains a clear result; preferably all do.

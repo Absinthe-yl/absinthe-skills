@@ -1,7 +1,7 @@
 interface:
   display_name: "项目亮点写作"
-  short_description: "Write interview-worthy project highlights"
-  default_prompt: "Use $write-project-highlights to turn my internship, work, or personal project into interview-worthy quantified resume highlights."
+  short_description: "Write architecture-focused project highlights"
+  default_prompt: "Use $write-project-highlights to turn my internship, work, personal project, or codebase notes into architecture-focused quantified resume highlights."
 
 policy:
   allow_implicit_invocation: true
