@@ -1,6 +1,6 @@
 ---
 name: write-project-highlights
-description: Generate resume-ready Chinese project highlights from raw project information. Use when Codex needs to turn project names, technology stacks, project descriptions, responsibilities, achievements, metrics, or interview/resume notes into polished project experience using the STAR method, quantified impact, and mostly plain-language descriptions without code snippets, class names, method names, repository names, or implementation identifiers.
+description: Generate interview-worthy Chinese project highlights from raw internship, personal project, or work project information. Use when Codex needs to turn project names, technology stacks, descriptions, responsibilities, achievements, metrics, or resume/interview notes into polished project experience using an interviewer perspective, STAR method, quantified impact, meaningful short titles for each bullet, and mostly plain-language descriptions without code snippets, class names, method names, repository names, or low-value implementation inventory.
 ---
 
 # Write Project Highlights
