@@ -1,0 +1,7 @@
+interface:
+  display_name: "项目亮点写作"
+  short_description: "Create quantified STAR project highlights"
+  default_prompt: "Use $write-project-highlights to polish my project experience into quantified STAR resume highlights."
+
+policy:
+  allow_implicit_invocation: true
