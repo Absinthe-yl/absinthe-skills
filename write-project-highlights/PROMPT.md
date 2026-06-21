@@ -14,6 +14,8 @@ Write highlights from an interviewer's perspective. A point is worth writing onl
 
 Do not list facts just because they exist in the project. Test file counts, test case counts, code coverage, module lists, tool names, page names, and implementation inventory are not resume highlights unless they directly connect to quality improvement, defect reduction, delivery efficiency, or production stability.
 
+Highlights should be relatively independent from each other. If two candidate points describe the same problem chain, same technical theme, same workflow, or one is only a supporting step of the other, merge them into one stronger bullet instead of splitting them across multiple bullets.
+
 ## Input You May Receive
 
 The user may provide any mix of:
@@ -40,6 +42,15 @@ Before writing, rank candidate points by interview value:
 3. Low value: only adding tests, listing many files/modules, routine CRUD, UI page completion, dependency upgrades, documentation, simple configuration, generic "used framework X".
 
 Drop low-value points unless the user explicitly asks to keep them. If a low-value fact can support a stronger point, fold it into that stronger point instead of making it a standalone bullet.
+
+Group tightly related work before writing:
+
+- Same root problem: combine diagnosis, design, fallback, monitoring, and optimization into one bullet.
+- Same user workflow: combine upstream input, core processing, downstream callback, and data closure into one bullet when they serve the same outcome.
+- Same architecture theme: combine configuration, orchestration, extension points, and runtime assembly into one bullet if they describe one design.
+- Same metric: combine all actions that contributed to the same latency, accuracy, conversion, stability, or cost result.
+
+Avoid producing adjacent bullets where the second bullet depends on the first bullet to make sense. Each bullet should stand alone as an interview discussion topic.
 
 ## STAR Workflow
 
@@ -87,6 +98,8 @@ Use this structure unless the user requests another:
 ```
 
 If the user provides many responsibilities, merge similar items and produce 3-5 high-value highlights. For short resume versions, produce 2-3 highlights.
+
+Prefer fewer, stronger, non-overlapping bullets over many fragmented bullets. If merging related work makes a bullet more complete and convincing, merge it.
 
 ## Writing Rules
 
@@ -138,6 +151,7 @@ Before responding, verify:
 
 - Each `核心职责` starts with a meaningful small title.
 - Each bullet is substantial enough to be discussed in an interview.
+- Each bullet is relatively independent; strongly related actions are merged into one complete point.
 - Each bullet maps to STAR logic.
 - Low-value inventory facts are removed or folded into stronger points.
 - At least one highlight contains a clear result; preferably all do.
