@@ -118,6 +118,10 @@ def diary_dir(root: Path) -> Path:
     return root / "日报"
 
 
+def weekly_dir(root: Path) -> Path:
+    return root / "周报"
+
+
 def record_path(root: Path, day: dt.date) -> Path:
     return record_dir(root) / f"{day:%Y-%m-%d}.md"
 
@@ -193,6 +197,21 @@ def report_path(root: Path, dates: list[dt.date], report_format: str) -> Path:
     return diary_dir(root) / f"{label} 日报.{suffix}"
 
 
+def week_monday(day: dt.date) -> dt.date:
+    return day - dt.timedelta(days=day.weekday())
+
+
+def week_dates(day: dt.date) -> list[dt.date]:
+    monday = week_monday(day)
+    return [monday + dt.timedelta(days=offset) for offset in range(7)]
+
+
+def weekly_report_path(root: Path, day: dt.date, report_format: str) -> Path:
+    monday = week_monday(day)
+    suffix = normalize_report_format(report_format) or "md"
+    return weekly_dir(root) / f"{monday.year}-M{monday.month}-{monday:%Y%m%d}.{suffix}"
+
+
 def clean_lines(values: Iterable[str] | None) -> list[str]:
     if not values:
         return []
@@ -230,35 +249,39 @@ def split_activity(text: str) -> tuple[list[str], list[list[str]]]:
     return header, blocks
 
 
-def reported_value(block: list[str]) -> str | None:
+def reported_value(block: list[str], field: str = "Reported") -> str | None:
     for line in block:
-        match = re.match(r"- Reported:\s*(.*)", line)
+        match = re.match(rf"- {re.escape(field)}:\s*(.*)", line)
         if match:
             return match.group(1).strip()
     return None
 
 
-def is_unreported(block: list[str]) -> bool:
-    value = reported_value(block)
+def is_unreported(block: list[str], field: str = "Reported") -> bool:
+    value = reported_value(block, field)
     return value is None or value.lower() in UNREPORTED_VALUES
 
 
-def render_activity(text: str, include_reported: bool) -> str:
+def render_activity(
+    text: str, include_reported: bool, field: str = "Reported", empty_label: str = "unreported"
+) -> str:
     header, blocks = split_activity(text)
-    selected = [block for block in blocks if include_reported or is_unreported(block)]
+    selected = [block for block in blocks if include_reported or is_unreported(block, field)]
     if not selected:
-        return "".join(header).rstrip() + "\n\n(no unreported activity entries)\n"
+        return "".join(header).rstrip() + f"\n\n(no {empty_label} activity entries)\n"
     return "".join(header + [line for block in selected for line in block])
 
 
-def mark_reported_text(text: str, report: Path) -> tuple[str, int]:
+def mark_reported_text(
+    text: str, report: Path, field: str = "Reported"
+) -> tuple[str, int]:
     header, blocks = split_activity(text)
     changed_count = 0
     report_label = str(report)
     updated_blocks: list[list[str]] = []
 
     for block in blocks:
-        if not is_unreported(block):
+        if not is_unreported(block, field):
             updated_blocks.append(block)
             continue
 
@@ -266,8 +289,8 @@ def mark_reported_text(text: str, report: Path) -> tuple[str, int]:
         updated = list(block)
         replaced = False
         for index, line in enumerate(updated):
-            if line.startswith("- Reported:"):
-                updated[index] = f"- Reported: {report_label}\n"
+            if line.startswith(f"- {field}:"):
+                updated[index] = f"- {field}: {report_label}\n"
                 replaced = True
                 break
 
@@ -276,7 +299,7 @@ def mark_reported_text(text: str, report: Path) -> tuple[str, int]:
             for index, line in enumerate(updated):
                 if line.startswith("- Entry ID:") or line.startswith("- AI tool:"):
                     insert_at = index + 1
-            updated.insert(insert_at, f"- Reported: {report_label}\n")
+            updated.insert(insert_at, f"- {field}: {report_label}\n")
 
         updated_blocks.append(updated)
 
@@ -298,6 +321,7 @@ def append_entry(args: argparse.Namespace) -> None:
         f"\n## {now} - {title}\n",
         f"- Entry ID: {entry_id}\n",
         "- Reported: no\n",
+        "- Weekly Reported: no\n",
         f"- AI tool: {tool}\n",
     ]
     if args.project:
@@ -375,11 +399,70 @@ def write_report(args: argparse.Namespace) -> None:
     print(report)
 
 
+def show_week(args: argparse.Namespace) -> None:
+    root = resolve_root(args)
+    report_format = resolve_report_format(args)
+    day = parse_date(args.date)
+    print(f"weekly_report: {weekly_report_path(root, day, report_format)}")
+    for record_day in week_dates(day):
+        record = record_path(root, record_day)
+        print()
+        print(f"record: {record}")
+        print()
+        if record.exists():
+            print(
+                render_activity(
+                    record.read_text(encoding="utf-8"),
+                    args.all,
+                    field="Weekly Reported",
+                    empty_label="unreported weekly",
+                )
+            )
+        else:
+            print("(no work record yet)")
+
+
+def write_weekly_report(args: argparse.Namespace) -> None:
+    root = resolve_root(args)
+    report_format = resolve_report_format(args)
+    day = parse_date(args.date)
+    report = weekly_report_path(root, day, report_format)
+    report.parent.mkdir(parents=True, exist_ok=True)
+
+    if args.from_file:
+        text = Path(args.from_file).expanduser().read_text(encoding="utf-8")
+    else:
+        text = sys.stdin.read()
+
+    text = text.strip()
+    if not text:
+        raise SystemExit("Refusing to write an empty weekly report")
+
+    report.write_text(text + "\n", encoding="utf-8")
+    if not args.no_mark_reported:
+        marked = 0
+        for record_day in week_dates(day):
+            record = record_path(root, record_day)
+            if not record.exists():
+                continue
+            updated, changed_count = mark_reported_text(
+                record.read_text(encoding="utf-8"),
+                report,
+                field="Weekly Reported",
+            )
+            if changed_count:
+                record.write_text(updated, encoding="utf-8")
+                marked += changed_count
+        print(f"marked_weekly_reported: {marked}")
+    print(report)
+
+
 def configure(args: argparse.Namespace) -> None:
     root = Path(args.daily_root).expanduser()
     report_format = normalize_report_format(args.report_format)
     record_dir(root).mkdir(parents=True, exist_ok=True)
     diary_dir(root).mkdir(parents=True, exist_ok=True)
+    weekly_dir(root).mkdir(parents=True, exist_ok=True)
     path = save_config(root, report_format or "md")
     print(f"config: {path}")
     print(f"root: {root}")
@@ -440,6 +523,23 @@ def build_parser() -> argparse.ArgumentParser:
         help="Do not mark selected activity entries as reported after writing",
     )
     write.set_defaults(func=write_report)
+
+    show_weekly = subparsers.add_parser(
+        "show-week", help="Show work records for the week containing a date"
+    )
+    show_weekly.add_argument("--date", help="Any date in the target week")
+    show_weekly.add_argument("--all", action="store_true", help="Show weekly-reported entries too")
+    show_weekly.set_defaults(func=show_week)
+
+    weekly = subparsers.add_parser("write-weekly-report", help="Write final weekly report")
+    weekly.add_argument("--date", help="Any date in the target week")
+    weekly.add_argument("--from-file", help="Weekly report file to write")
+    weekly.add_argument(
+        "--no-mark-reported",
+        action="store_true",
+        help="Do not mark selected activity entries as weekly reported after writing",
+    )
+    weekly.set_defaults(func=write_weekly_report)
 
     config = subparsers.add_parser("configure", help="Remember the daily report root")
     config.add_argument(

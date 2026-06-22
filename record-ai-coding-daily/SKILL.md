@@ -1,16 +1,17 @@
 ---
 name: record-ai-coding-daily
-description: Record and summarize the user's AI coding tool activity into local date-organized daily report documents, with remembered storage root and txt/md report format preferences. Use when the user asks to log what they just did with AI coding tools such as Claude, Codex, CodeBuddy, Cursor, Copilot, or similar assistants; append an entry after an AI coding session; read today's accumulated AI work notes; configure the local daily-report memory; or generate a final Chinese daily report with completed work, TODOs, and problems/thoughts.
+description: Record and summarize the user's AI coding tool activity into local date-organized daily and weekly report documents, with remembered storage root and txt/md report format preferences. Use when the user asks to log what they just did with AI coding tools such as Claude, Codex, CodeBuddy, Cursor, Copilot, or similar assistants; append an entry after an AI coding session; read today's accumulated AI work notes; configure the local report memory; generate a final Chinese daily report with completed work, TODOs, and problems/thoughts; or generate a weekly report covering the week of a date with goals, measurement, progress, and summary.
 ---
 
 # Record AI Coding Daily
 
 ## Overview
 
-Maintain a local, date-organized record of AI-assisted coding work. Use this skill in two modes:
+Maintain a local, date-organized record of AI-assisted coding work. Use this skill in three modes:
 
 1. **Session logging**: after each AI window/session, append a concise entry to today's activity document.
-2. **Report generation**: near the end of a day or after a multi-day work span, read the accumulated activity documents and write a polished Chinese report.
+2. **Daily report generation**: near the end of a day or after a multi-day work span, read the accumulated activity documents and write a polished Chinese daily report.
+3. **Weekly report generation**: read one calendar week of work records and write a Chinese weekly report.
 
 Use `scripts/daily_log.py` for all filesystem writes so paths and document structure stay consistent.
 
@@ -39,11 +40,12 @@ Inspect saved config with:
 python3 <skill>/scripts/daily_log.py config
 ```
 
-The script creates exactly two first-level directories under the user-chosen root:
+The script creates exactly three first-level directories under the user-chosen root:
 
 ```text
 <root>/工作记录/
 <root>/日报/
+<root>/周报/
 ```
 
 Daily work records are stored in `工作记录/`, one file per date:
@@ -68,14 +70,26 @@ If the saved report format is `txt`, use the same names with `.txt`:
 
 Treat files in `工作记录/` as the incremental raw log and files in `日报/` as final user-facing reports.
 
+Weekly reports are stored in `周报/`, with filenames based on the target week's Monday:
+
+```text
+<root>/周报/2026-M6-20260615.md
+<root>/周报/2026-M6-20260615.txt
+```
+
+In this name, `M6` means June and `20260615` is the Monday of that week.
+
 Each activity entry includes:
 
 ```text
 - Entry ID: <unique-id>
 - Reported: no
+- Weekly Reported: no
 ```
 
 After writing a report, `scripts/daily_log.py write-report` marks selected unreported entries as reported by replacing `Reported: no` with the report file path. Use this marker, not only the date, to decide whether content still needs to be included in a future report.
+
+After writing a weekly report, `scripts/daily_log.py write-weekly-report` marks selected weekly-unreported entries by replacing `Weekly Reported: no` with the weekly report file path. Daily and weekly markers are independent.
 
 ## Tool Compatibility
 
@@ -149,7 +163,7 @@ By default, `show` omits entries already marked as reported. Use `--all` only wh
 
 If the selected dates have no unreported activity entries, ask the user whether to include already reported entries, pick different dates, or provide raw work notes. Do not invent a report.
 
-### 3. Generate the final report
+### 3. Generate the final daily report
 
 Read `references/report-style.md` before drafting the report. Then synthesize the selected activity entries into three sections:
 
@@ -195,6 +209,33 @@ After writing, the script marks the selected unreported entries as reported. Use
 
 Never overwrite an existing report file silently when the new report drops meaningful content from the previous report. If a previous report exists, read it first and merge or explicitly preserve relevant material.
 
+### 4. Generate the final weekly report
+
+Read `references/weekly-report-style.md` before drafting the report. Then inspect work records for the week containing the target date:
+
+```bash
+python3 <skill>/scripts/daily_log.py show-week --date YYYY-MM-DD
+```
+
+The target date can be any day in the week. The script derives that week's Monday and prints the final weekly report path.
+
+Draft the weekly report with exactly these sections:
+
+```text
+一、目标解决什么问题、这个问题的价值
+二、如何衡量
+三、进展
+四、总结（如有）
+```
+
+Write the weekly report with:
+
+```bash
+python3 <skill>/scripts/daily_log.py write-weekly-report --date YYYY-MM-DD --from-file /tmp/weekly-report.md
+```
+
+Use the saved txt/md format unless the user explicitly overrides it with `--format md` or `--format txt` before the subcommand. After writing, the script marks selected records as weekly reported without changing daily report markers.
+
 ## Quality Bar
 
 - Keep session entries small enough to append often.
@@ -202,6 +243,7 @@ Never overwrite an existing report file silently when the new report drops meani
 - Keep final reports natural and manager-readable.
 - Distinguish verified facts from pending checks.
 - Prefer unreported entries when generating reports; include already reported entries only when the user explicitly wants regeneration or correction.
+- Keep daily and weekly report markers separate; generating one must not hide content from the other.
 - Do not claim platform-side closure unless the activity log says the platform was actually checked.
 - Do not include long code blocks in the final report unless the user explicitly requests them.
 
@@ -209,3 +251,4 @@ Never overwrite an existing report file silently when the new report drops meani
 
 - `scripts/daily_log.py`: deterministic append, show, and write-report operations.
 - `references/report-style.md`: Chinese report style and section guidance.
+- `references/weekly-report-style.md`: Chinese weekly report style and section guidance.
