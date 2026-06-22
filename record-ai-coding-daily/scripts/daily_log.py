@@ -16,6 +16,8 @@ import uuid
 
 UNREPORTED_VALUES = {"", "no", "false", "pending", "unreported"}
 CONFIG_ENV = "AI_CODING_DAILY_CONFIG"
+FORMAT_ENV = "AI_CODING_DAILY_FORMAT"
+REPORT_FORMATS = {"md", "txt"}
 
 
 def config_path() -> Path:
@@ -38,10 +40,22 @@ def load_config() -> dict[str, str]:
     return {str(key): str(value) for key, value in data.items()}
 
 
-def save_config(root: Path) -> Path:
+def normalize_report_format(value: str | None) -> str | None:
+    if value is None:
+        return None
+    normalized = value.strip().lower().lstrip(".")
+    if normalized not in REPORT_FORMATS:
+        raise SystemExit("Report format must be 'md' or 'txt'")
+    return normalized
+
+
+def save_config(root: Path, report_format: str) -> Path:
     path = config_path()
     path.parent.mkdir(parents=True, exist_ok=True)
-    payload = {"root": str(root.expanduser())}
+    payload = {
+        "root": str(root.expanduser()),
+        "report_format": normalize_report_format(report_format),
+    }
     path.write_text(
         json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
@@ -65,6 +79,25 @@ def resolve_root(args: argparse.Namespace | None = None) -> Path:
         "Daily report root is required. Ask the user where to store AI coding "
         "daily documents, then run configure, pass --root, or set "
         "AI_CODING_DAILY_ROOT."
+    )
+
+
+def resolve_report_format(args: argparse.Namespace | None = None) -> str:
+    if args and getattr(args, "format", None):
+        return normalize_report_format(args.format) or "md"
+
+    env_format = normalize_report_format(os.environ.get(FORMAT_ENV))
+    if env_format:
+        return env_format
+
+    configured_format = normalize_report_format(load_config().get("report_format"))
+    if configured_format:
+        return configured_format
+
+    raise SystemExit(
+        "Daily report format is required. Ask the user whether reports should be "
+        "txt or md, then run configure with --format, pass --format, or set "
+        "AI_CODING_DAILY_FORMAT."
     )
 
 
@@ -140,12 +173,13 @@ def is_contiguous(dates: list[dt.date]) -> bool:
     return ordered == list(date_span(ordered[0], ordered[-1]))
 
 
-def report_path(root: Path, dates: list[dt.date]) -> Path:
+def report_path(root: Path, dates: list[dt.date], report_format: str) -> Path:
     ordered = sorted(dates)
     include_year = len({day.year for day in ordered}) > 1
+    suffix = normalize_report_format(report_format) or "md"
 
     if len(ordered) == 1:
-        file_name = f"{short_date_label(ordered[0], include_year)} 日报.md"
+        file_name = f"{short_date_label(ordered[0], include_year)} 日报.{suffix}"
         return diary_dir(root) / file_name
 
     if is_contiguous(ordered):
@@ -156,7 +190,7 @@ def report_path(root: Path, dates: list[dt.date]) -> Path:
     else:
         label = "、".join(short_date_label(day, include_year) for day in ordered)
 
-    return diary_dir(root) / f"{label} 日报.md"
+    return diary_dir(root) / f"{label} 日报.{suffix}"
 
 
 def clean_lines(values: Iterable[str] | None) -> list[str]:
@@ -294,8 +328,9 @@ def append_entry(args: argparse.Namespace) -> None:
 
 def show_day(args: argparse.Namespace) -> None:
     root = resolve_root(args)
+    report_format = resolve_report_format(args)
     dates = parse_selected_dates(args)
-    print(f"report: {report_path(root, dates)}")
+    print(f"report: {report_path(root, dates, report_format)}")
     for day in dates:
         record = record_path(root, day)
         print()
@@ -309,8 +344,9 @@ def show_day(args: argparse.Namespace) -> None:
 
 def write_report(args: argparse.Namespace) -> None:
     root = resolve_root(args)
+    report_format = resolve_report_format(args)
     dates = parse_selected_dates(args)
-    report = report_path(root, dates)
+    report = report_path(root, dates, report_format)
     report.parent.mkdir(parents=True, exist_ok=True)
 
     if args.from_file:
@@ -341,11 +377,13 @@ def write_report(args: argparse.Namespace) -> None:
 
 def configure(args: argparse.Namespace) -> None:
     root = Path(args.daily_root).expanduser()
+    report_format = normalize_report_format(args.report_format)
     record_dir(root).mkdir(parents=True, exist_ok=True)
     diary_dir(root).mkdir(parents=True, exist_ok=True)
-    path = save_config(root)
+    path = save_config(root, report_format or "md")
     print(f"config: {path}")
     print(f"root: {root}")
+    print(f"report_format: {report_format}")
 
 
 def show_config(_args: argparse.Namespace) -> None:
@@ -356,11 +394,16 @@ def show_config(_args: argparse.Namespace) -> None:
         print(f"root: {Path(config['root']).expanduser()}")
     else:
         print("(no root configured)")
+    if config.get("report_format"):
+        print(f"report_format: {config['report_format']}")
+    else:
+        print("(no report format configured)")
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", help="User-chosen daily report root directory")
+    parser.add_argument("--format", choices=sorted(REPORT_FORMATS), help="Report format")
 
     subparsers = parser.add_subparsers(dest="command", required=True)
 
@@ -404,6 +447,13 @@ def build_parser() -> argparse.ArgumentParser:
         dest="daily_root",
         required=True,
         help="User-chosen daily report root directory to remember",
+    )
+    config.add_argument(
+        "--format",
+        dest="report_format",
+        choices=sorted(REPORT_FORMATS),
+        required=True,
+        help="Report file format to remember",
     )
     config.set_defaults(func=configure)
 

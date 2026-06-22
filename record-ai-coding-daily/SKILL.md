@@ -1,6 +1,6 @@
 ---
 name: record-ai-coding-daily
-description: Record and summarize the user's AI coding tool activity into local date-organized daily report documents. Use when the user asks to log what they just did with AI coding tools such as Claude, Codex, CodeBuddy, Cursor, Copilot, or similar assistants; append an entry after an AI coding session; read today's accumulated AI work notes; or generate a final Chinese daily report with completed work, TODOs, and problems/thoughts.
+description: Record and summarize the user's AI coding tool activity into local date-organized daily report documents, with remembered storage root and txt/md report format preferences. Use when the user asks to log what they just did with AI coding tools such as Claude, Codex, CodeBuddy, Cursor, Copilot, or similar assistants; append an entry after an AI coding session; read today's accumulated AI work notes; configure the local daily-report memory; or generate a final Chinese daily report with completed work, TODOs, and problems/thoughts.
 ---
 
 # Record AI Coding Daily
@@ -16,21 +16,22 @@ Use `scripts/daily_log.py` for all filesystem writes so paths and document struc
 
 ## Storage
 
-Always ask the user where to store the AI coding daily documents before the first write unless the path is already explicit in the conversation, saved in this skill's local config, or `AI_CODING_DAILY_ROOT` is set. Do not silently choose a default path.
+Always ask the user where to store the AI coding daily documents and whether final reports should be `txt` or `md` before the first write unless those values are already explicit in the conversation, saved in this skill's local config, or set through environment variables. Do not silently choose defaults.
 
 Ask in Chinese when needed:
 
 ```text
 你希望 AI 编码日报保存到哪个本地目录？
+日报文件希望保存为 txt 还是 md？
 ```
 
-Then save the chosen directory once:
+Then save the chosen directory and report format once:
 
 ```bash
-python3 <skill>/scripts/daily_log.py configure --root "/path/chosen/by/user"
+python3 <skill>/scripts/daily_log.py configure --root "/path/chosen/by/user" --format md
 ```
 
-This writes a local config file at `~/.config/ai-coding-daily/config.json` unless `AI_CODING_DAILY_CONFIG` points elsewhere. Treat that config as the durable memory shared by future invocations. If the user has configured `AI_CODING_DAILY_ROOT`, use it without asking again. Use `--root <path>` on individual commands only for an explicit one-off override.
+This writes a local config file at `~/.config/ai-coding-daily/config.json` unless `AI_CODING_DAILY_CONFIG` points elsewhere. Treat that config as the durable memory shared by future invocations. If the user has configured `AI_CODING_DAILY_ROOT` and `AI_CODING_DAILY_FORMAT`, use them without asking again. Use `--root <path>` or `--format md|txt` on individual commands only for explicit one-off overrides.
 
 Inspect saved config with:
 
@@ -57,6 +58,12 @@ Reports are stored in `日报/`, with filenames in the `<日期> 日报.md` styl
 <root>/日报/6.17 日报.md
 <root>/日报/6.17-6.18 日报.md
 <root>/日报/6.17、6.22 日报.md
+```
+
+If the saved report format is `txt`, use the same names with `.txt`:
+
+```text
+<root>/日报/6.17 日报.txt
 ```
 
 Treat files in `工作记录/` as the incremental raw log and files in `日报/` as final user-facing reports.
@@ -120,6 +127,12 @@ After `configure` has saved a root, omit `--root`:
 python3 <skill>/scripts/daily_log.py show --date YYYY-MM-DD
 ```
 
+If the user explicitly wants to preview a different output format once, pass `--format md` or `--format txt` before the subcommand:
+
+```bash
+python3 <skill>/scripts/daily_log.py --format txt show --date YYYY-MM-DD
+```
+
 For a report covering a continuous date range:
 
 ```bash
@@ -160,6 +173,12 @@ After `configure` has saved a root, omit `--root`:
 python3 <skill>/scripts/daily_log.py write-report --date YYYY-MM-DD --from-file /tmp/report.md
 ```
 
+If the user explicitly wants a different output format once, pass `--format md` or `--format txt` before the subcommand:
+
+```bash
+python3 <skill>/scripts/daily_log.py --format txt write-report --date YYYY-MM-DD --from-file /tmp/report.txt
+```
+
 Write a multi-day report with:
 
 ```bash
@@ -179,7 +198,7 @@ Never overwrite an existing report file silently when the new report drops meani
 ## Quality Bar
 
 - Keep session entries small enough to append often.
-- Use the saved config before asking for a storage path; ask only when no saved root, no explicit `--root`, and no `AI_CODING_DAILY_ROOT` is available.
+- Use the saved config before asking for storage path or report format; ask only when no saved value, no explicit command override, and no environment override is available.
 - Keep final reports natural and manager-readable.
 - Distinguish verified facts from pending checks.
 - Prefer unreported entries when generating reports; include already reported entries only when the user explicitly wants regeneration or correction.

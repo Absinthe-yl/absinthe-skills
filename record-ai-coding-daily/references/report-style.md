@@ -1,6 +1,6 @@
 # Daily Report Style
 
-Use this reference when turning one or more files from `工作记录/` into a final report under `日报/`.
+Use this reference when turning one or more files from `工作记录/` into a final `.md` or `.txt` report under `日报/`.
 
 ## Output Shape
 
