@@ -16,11 +16,15 @@ Use `scripts/daily_log.py` for all filesystem writes so paths and document struc
 
 ## Storage
 
-Default root resolution in `scripts/daily_log.py`:
+Always ask the user where to store the AI coding daily documents before the first write unless the path is already explicit in the conversation or `AI_CODING_DAILY_ROOT` is set. Do not silently choose a default path.
 
-1. `AI_CODING_DAILY_ROOT` if set.
-2. `~/Desktop/个人知识库/AI编码日报` if `~/Desktop/个人知识库` exists.
-3. `~/Documents/ai-coding-daily` otherwise.
+Ask in Chinese when needed:
+
+```text
+你希望 AI 编码日报保存到哪个本地目录？
+```
+
+Then pass the chosen directory with `--root <path>`. If the user has configured `AI_CODING_DAILY_ROOT`, use it without asking again.
 
 Per-day files use:
 
@@ -36,6 +40,19 @@ Multi-day reports use:
 ```
 
 Treat `activity.md` as the incremental raw log and `daily-report.md` as the final user-facing report.
+
+Each activity entry includes:
+
+```text
+- Entry ID: <unique-id>
+- Reported: no
+```
+
+After writing a report, `scripts/daily_log.py write-report` marks selected unreported entries as reported by replacing `Reported: no` with the report path. Use this marker, not only the date, to decide whether content still needs to be included in a future report.
+
+## Tool Compatibility
+
+This skill is tool-agnostic. Use it with Claude, Codex, CodeBuddy, Cursor, Copilot, or any AI coding tool that can follow the workflow and run or delegate the local script. Set `--tool` to the actual assistant name so the source remains clear in `activity.md`.
 
 ## Workflow
 
@@ -59,6 +76,7 @@ Run:
 
 ```bash
 python3 <skill>/scripts/daily_log.py append \
+  --root "/path/chosen/by/user" \
   --tool "Codex" \
   --project "agent-framework" \
   --title "Validated monitoring smoke path" \
@@ -71,19 +89,27 @@ Use `--date YYYY-MM-DD` only when the user asks to record a non-current day. The
 
 ### 2. Inspect accumulated notes
 
-Before generating a report, read the accumulated log. For a single day:
+Before generating a report, read the accumulated unreported log. For a single day:
 
 ```bash
-python3 <skill>/scripts/daily_log.py show --date YYYY-MM-DD
+python3 <skill>/scripts/daily_log.py show --root "/path/chosen/by/user" --date YYYY-MM-DD
 ```
 
-For a report covering two or more days:
+For a report covering a continuous date range:
 
 ```bash
-python3 <skill>/scripts/daily_log.py show --start-date YYYY-MM-DD --end-date YYYY-MM-DD
+python3 <skill>/scripts/daily_log.py show --root "/path/chosen/by/user" --start-date YYYY-MM-DD --end-date YYYY-MM-DD
 ```
 
-If the selected date range has no activity entries, ask the user for the raw work notes instead of inventing a report.
+For non-contiguous dates, such as Friday and the following Monday only:
+
+```bash
+python3 <skill>/scripts/daily_log.py show --root "/path/chosen/by/user" --dates YYYY-MM-DD,YYYY-MM-DD
+```
+
+By default, `show` omits entries already marked as reported. Use `--all` only when the user explicitly wants to inspect or regenerate already reported content.
+
+If the selected dates have no unreported activity entries, ask the user whether to include already reported entries, pick different dates, or provide raw work notes. Do not invent a report.
 
 ### 3. Generate the final report
 
@@ -100,14 +126,22 @@ Write mostly prose paragraphs, not code-heavy lists. Merge related entries acros
 Write a single-day report with:
 
 ```bash
-python3 <skill>/scripts/daily_log.py write-report --date YYYY-MM-DD --from-file /tmp/report.md
+python3 <skill>/scripts/daily_log.py write-report --root "/path/chosen/by/user" --date YYYY-MM-DD --from-file /tmp/report.md
 ```
 
 Write a multi-day report with:
 
 ```bash
-python3 <skill>/scripts/daily_log.py write-report --start-date YYYY-MM-DD --end-date YYYY-MM-DD --from-file /tmp/report.md
+python3 <skill>/scripts/daily_log.py write-report --root "/path/chosen/by/user" --start-date YYYY-MM-DD --end-date YYYY-MM-DD --from-file /tmp/report.md
 ```
+
+Write a report for non-contiguous dates, such as Friday and the following Monday, with:
+
+```bash
+python3 <skill>/scripts/daily_log.py write-report --root "/path/chosen/by/user" --dates YYYY-MM-DD,YYYY-MM-DD --from-file /tmp/report.md
+```
+
+After writing, the script marks the selected unreported entries as reported. Use `--no-mark-reported` only for dry runs or explicit user requests.
 
 Never overwrite an existing `daily-report.md` silently when the new report drops meaningful content from the previous report. If a previous report exists, read it first and merge or explicitly preserve relevant material.
 
@@ -116,6 +150,7 @@ Never overwrite an existing `daily-report.md` silently when the new report drops
 - Keep session entries small enough to append often.
 - Keep final reports natural and manager-readable.
 - Distinguish verified facts from pending checks.
+- Prefer unreported entries when generating reports; include already reported entries only when the user explicitly wants regeneration or correction.
 - Do not claim platform-side closure unless the activity log says the platform was actually checked.
 - Do not include long code blocks in the final report unless the user explicitly requests them.
 

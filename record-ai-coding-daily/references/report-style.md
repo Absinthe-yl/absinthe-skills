@@ -19,6 +19,7 @@ Use exactly these top-level sections:
 - Use short TODO lines for next actions.
 - Keep a professional engineering tone: factual, specific, and calm.
 - For multi-day reports, name the covered dates early, such as `这两天主要推进...` or `6.21 到 6.22 主要完成...`.
+- For non-contiguous dates, name the actual work dates rather than implying every calendar day was active.
 - Mention AI tools only when tool usage itself matters; otherwise summarize the engineering outcome.
 - Avoid excessive code, command dumps, or raw logs.
 - Preserve important concrete identifiers: dates, module names, endpoints, trace_id/request_id, platform names, metric IDs, table names, test file names, and pass/fail counts.
@@ -38,6 +39,12 @@ For two-day or multi-day reports, use wording like:
 
 ```text
 这两天主要推进 xxx 的真实链路验证，重点确认 xxx、xxx、xxx 是否能在真实环境中闭环。
+```
+
+For non-contiguous days such as Friday and the following Monday, use wording like:
+
+```text
+上周五和本周一主要推进 xxx 的真实链路验证，重点确认 xxx、xxx、xxx 是否能在真实环境中闭环。
 ```
 
 Then describe the main work streams. For each stream, include:
