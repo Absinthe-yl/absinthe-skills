@@ -122,9 +122,9 @@ python3 <skill>/scripts/daily_log.py append \
   --tool "Codex" \
   --project "agent-framework" \
   --title "Validated monitoring smoke path" \
-  --done "完成了 music_recommend 真实请求链路验证，确认请求进入 GraphBuilder.run() 并向 mesh sidecar 上报 WeCube trace。" \
-  --todo "继续按 trace_id 查询 WeCube 平台，确认数据真实入库。" \
-  --issue "当前已确认应用侧上报成功，但平台侧可见性仍需补验。"
+  --done "完成了音乐推荐链路验证，确认请求能走通并产生关键观测信息。" \
+  --todo "继续在真实平台确认观测数据可查。" \
+  --issue "当前已确认应用侧正常，平台侧可见性仍需补验。"
 ```
 
 Use `--date YYYY-MM-DD` only when the user asks to record a non-current day. The script prints the written file path; mention it briefly if useful.
@@ -175,9 +175,9 @@ Read `references/report-style.md` before drafting the report. Then synthesize th
 三、问题和思考
 ```
 
-Write mostly prose paragraphs, not code-heavy lists. Merge related entries across dates and multiple AI tools into coherent work streams. Preserve concrete facts from the log, including dates, platform names, request ids, test results, and unresolved verification items.
+Write a very short human-facing summary, not a technical replay. Keep the whole daily report around 130 Chinese characters, including punctuation, unless the user explicitly asks for a detailed version. Merge related entries across dates and multiple AI tools into coherent work streams.
 
-For `一、已完成事项`, write 4-5 compact work-stream paragraphs when there is enough material. Keep related work from the same module or objective together, such as project architecture reading in one paragraph and dag-viewer UI/backend/observability work in one or two adjacent paragraphs. Do not split the same module into scattered one-line items. Avoid blank lines between individual completed-work paragraphs; keep the section visually continuous and pleasant to read.
+For `一、已完成事项`, write 1-2 short natural-language sentences that cover 3-5 major work streams when there is enough material. Keep related work from the same module or objective together. Do not list function names, route names, node names, config keys, file paths, or command names unless they are the actual thing the user needs to report. Replace code details with plain descriptions such as "梳理项目架构", "优化调试台体验", "新增菜单推荐能力", or "完成服务目录规范化".
 
 Write a single-day report with:
 
@@ -244,9 +244,10 @@ Use the saved txt/md format unless the user explicitly overrides it with `--form
 
 - Keep session entries small enough to append often.
 - Use the saved config before asking for storage path or report format; ask only when no saved value, no explicit command override, and no environment override is available.
-- Keep final reports natural and manager-readable.
-- In daily reports, group same-module work together and keep `一、已完成事项` to 4-5 substantial prose items when material allows.
+- Keep final reports short, natural, and manager-readable; default daily report length is about 130 Chinese characters total, including punctuation.
+- In daily reports, group same-module work together and compress `一、已完成事项` into 1-2 short sentences covering 3-5 major work streams when material allows.
 - Do not format completed work as one isolated line per item with blank lines between items.
+- Avoid code-level jargon in daily reports. Prefer "完成菜单推荐能力开发并验证成功/失败链路" over function names, route names, config keys, or internal node names.
 - Keep work records and reports centered on what the user did or completed; mention AI tools only as source metadata when useful.
 - Distinguish verified facts from pending checks.
 - Prefer unreported entries when generating reports; include already reported entries only when the user explicitly wants regeneration or correction.
