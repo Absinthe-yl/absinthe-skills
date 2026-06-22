@@ -18,6 +18,8 @@ Use exactly these top-level sections:
 - Write in Chinese.
 - Prefer concise, manager-readable paragraphs.
 - Focus on work streams and outcomes rather than chat-window chronology.
+- Center the report on what the user completed, verified, clarified, or decided. Mention AI tools only when their usage itself is relevant.
+- Group same-module or same-objective work together instead of splitting it by day or AI window.
 - Preserve concrete evidence from the work records: project names, platform names, metrics, tests, request ids, trace ids, table names, and known verification gaps.
 - Distinguish verified progress from planned or pending validation.
 - Avoid code blocks unless the user explicitly asks for them.
