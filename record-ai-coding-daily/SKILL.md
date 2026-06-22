@@ -175,9 +175,9 @@ Read `references/report-style.md` before drafting the report. Then synthesize th
 三、问题和思考
 ```
 
-Write a very short human-facing summary, not a technical replay. Keep the whole daily report around 130 Chinese characters, including punctuation, unless the user explicitly asks for a detailed version. Merge related entries across dates and multiple AI tools into coherent work streams.
+Write a short human-facing summary, not a technical replay. For `一、已完成事项`, keep each individual completed-work item around 130 Chinese characters, including punctuation, unless the user explicitly asks for a detailed version. The whole report may be longer when there are multiple completed items. Merge related entries across dates and multiple AI tools into coherent work streams.
 
-For `一、已完成事项`, write 1-2 short natural-language sentences that cover 3-5 major work streams when there is enough material. Keep related work from the same module or objective together. Do not list function names, route names, node names, config keys, file paths, or command names unless they are the actual thing the user needs to report. Replace code details with plain descriptions such as "梳理项目架构", "优化调试台体验", "新增菜单推荐能力", or "完成服务目录规范化".
+For `一、已完成事项`, write 3-5 compact completed-work items when there is enough material. Each item should be one natural-language sentence or a short paragraph around 130 Chinese characters. Keep related work from the same module or objective together. Do not list function names, route names, node names, config keys, file paths, or command names unless they are the actual thing the user needs to report. Replace code details with plain descriptions such as "梳理项目架构", "优化调试台体验", "新增菜单推荐能力", or "完成服务目录规范化".
 
 Write a single-day report with:
 
@@ -244,8 +244,8 @@ Use the saved txt/md format unless the user explicitly overrides it with `--form
 
 - Keep session entries small enough to append often.
 - Use the saved config before asking for storage path or report format; ask only when no saved value, no explicit command override, and no environment override is available.
-- Keep final reports short, natural, and manager-readable; default daily report length is about 130 Chinese characters total, including punctuation.
-- In daily reports, group same-module work together and compress `一、已完成事项` into 1-2 short sentences covering 3-5 major work streams when material allows.
+- Keep final reports short, natural, and manager-readable; each completed-work item in `一、已完成事项` should be about 130 Chinese characters, including punctuation.
+- In daily reports, group same-module work together and write 3-5 completed-work items when material allows.
 - Do not format completed work as one isolated line per item with blank lines between items.
 - Avoid code-level jargon in daily reports. Prefer "完成菜单推荐能力开发并验证成功/失败链路" over function names, route names, config keys, or internal node names.
 - Keep work records and reports centered on what the user did or completed; mention AI tools only as source metadata when useful.

@@ -15,7 +15,7 @@ Use exactly these top-level sections:
 ## Style
 
 - Write in Chinese.
-- Keep the entire daily report around 130 Chinese characters, including punctuation, unless the user explicitly asks for a detailed version.
+- Keep each individual completed-work item in `一、已完成事项` around 130 Chinese characters, including punctuation, unless the user explicitly asks for a detailed version. The full report may be longer when there are multiple items.
 - Prefer plain human wording over technical replay.
 - Use short TODO lines for next actions; keep only the most important 1-3 items.
 - Keep a professional engineering tone: factual, specific, and calm.
@@ -26,14 +26,14 @@ Use exactly these top-level sections:
 - Preserve at most 1-2 important business-facing identifiers when necessary, such as product/module names or test result counts.
 - Group repeated work across Claude, Codex, CodeBuddy, Cursor, or other tools by project or objective rather than by chat window.
 - Group same-module or same-objective work together. For example, summarize dag-viewer frontend、后端接口、观测信息和主题调整 as "优化 dag-viewer 本地调试体验", not as separate technical rows.
-- Do not write `一、已完成事项` as many isolated one-line items. Use 1-2 compact sentences covering 3-5 major work streams when material allows.
+- Do not write `一、已完成事项` as many fragmented technical lines. Use 3-5 compact human-readable completed-work items when material allows.
 - Avoid blank lines between individual completed-work items inside a section; keep them visually adjacent and continuous.
 
 ## Section Guidance
 
 ### 一、已完成事项
 
-Summarize what the user actually completed or verified. Keep this section short enough that a human can scan it in seconds. Prefer wording like:
+Summarize what the user actually completed or verified. Each item should be short enough that a human can scan it in seconds. Prefer wording like:
 
 ```text
 今天主要完成项目架构梳理、dag-viewer 调试台优化、AI 工具链更新、服务目录规范化和菜单推荐能力开发，并完成关键路径验证。
@@ -51,12 +51,12 @@ For non-contiguous days such as Friday and the following Monday, use wording lik
 上周五和本周一主要完成框架调试台优化和新能力验证，遗留真实环境测试与命名一致性确认。
 ```
 
-Compress the main work streams. Include:
+Compress each main work stream. Include:
 
 - What was completed.
 - What remains important to follow up.
 
-Target 3-5 work streams when the day's material is rich. If there are more than five raw items, combine them by module or goal. Do not exceed about 60 Chinese characters for this section unless the user asks for detail.
+Target 3-5 work streams when the day's material is rich. If there are more than five raw items, combine them by module or goal. Keep each completed-work item around 130 Chinese characters; do not compress the entire section to 130 characters.
 
 Bad pattern:
 
@@ -68,7 +68,9 @@ Bad pattern:
 Better pattern:
 
 ```text
-完成项目架构梳理、dag-viewer 调试台优化、AI 工具链更新、服务目录规范化和菜单推荐能力开发，并验证关键路径。
+完成项目架构梳理，明确服务框架、配置加载和部署链路的整体关系，为后续改启动、路由、配置和新增业务能力提供了清晰入口。
+优化 dag-viewer 本地调试体验，补齐 trace 查看、节点状态、执行时间线、观测摘要和主题切换，并完成前后端基础验证。
+推进菜单推荐能力开发，完成核心链路、异常处理和路由注册验证，后续重点补测真实环境效果与推荐质量。
 ```
 
 ### 二、TODO
