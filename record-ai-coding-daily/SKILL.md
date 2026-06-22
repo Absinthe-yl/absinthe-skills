@@ -26,20 +26,28 @@ Ask in Chinese when needed:
 
 Then pass the chosen directory with `--root <path>`. If the user has configured `AI_CODING_DAILY_ROOT`, use it without asking again.
 
-Per-day files use:
+The script creates exactly two first-level directories under the user-chosen root:
 
 ```text
-<root>/<YYYY>/<YYYY-MM-DD>/activity.md
-<root>/<YYYY>/<YYYY-MM-DD>/daily-report.md
+<root>/工作记录/
+<root>/日报/
 ```
 
-Multi-day reports use:
+Daily work records are stored in `工作记录/`, one file per date:
 
 ```text
-<root>/<YYYY>/<YYYY-MM-DD>_to_<YYYY-MM-DD>/daily-report.md
+<root>/工作记录/YYYY-MM-DD.md
 ```
 
-Treat `activity.md` as the incremental raw log and `daily-report.md` as the final user-facing report.
+Reports are stored in `日报/`, with filenames in the `<日期> 日报.md` style:
+
+```text
+<root>/日报/6.17 日报.md
+<root>/日报/6.17-6.18 日报.md
+<root>/日报/6.17、6.22 日报.md
+```
+
+Treat files in `工作记录/` as the incremental raw log and files in `日报/` as final user-facing reports.
 
 Each activity entry includes:
 
@@ -48,11 +56,11 @@ Each activity entry includes:
 - Reported: no
 ```
 
-After writing a report, `scripts/daily_log.py write-report` marks selected unreported entries as reported by replacing `Reported: no` with the report path. Use this marker, not only the date, to decide whether content still needs to be included in a future report.
+After writing a report, `scripts/daily_log.py write-report` marks selected unreported entries as reported by replacing `Reported: no` with the report file path. Use this marker, not only the date, to decide whether content still needs to be included in a future report.
 
 ## Tool Compatibility
 
-This skill is tool-agnostic. Use it with Claude, Codex, CodeBuddy, Cursor, Copilot, or any AI coding tool that can follow the workflow and run or delegate the local script. Set `--tool` to the actual assistant name so the source remains clear in `activity.md`.
+This skill is tool-agnostic. Use it with Claude, Codex, CodeBuddy, Cursor, Copilot, or any AI coding tool that can follow the workflow and run or delegate the local script. Set `--tool` to the actual assistant name so the source remains clear in the `工作记录/` files.
 
 ## Workflow
 
@@ -143,7 +151,7 @@ python3 <skill>/scripts/daily_log.py write-report --root "/path/chosen/by/user" 
 
 After writing, the script marks the selected unreported entries as reported. Use `--no-mark-reported` only for dry runs or explicit user requests.
 
-Never overwrite an existing `daily-report.md` silently when the new report drops meaningful content from the previous report. If a previous report exists, read it first and merge or explicitly preserve relevant material.
+Never overwrite an existing report file silently when the new report drops meaningful content from the previous report. If a previous report exists, read it first and merge or explicitly preserve relevant material.
 
 ## Quality Bar
 

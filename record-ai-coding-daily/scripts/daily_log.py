@@ -39,13 +39,22 @@ def parse_date(value: str | None) -> dt.date:
         raise SystemExit(f"Invalid --date {value!r}; expected YYYY-MM-DD") from exc
 
 
-def day_dir(root: Path, day: dt.date) -> Path:
-    return root / f"{day:%Y}" / f"{day:%Y-%m-%d}"
+def record_dir(root: Path) -> Path:
+    return root / "工作记录"
 
 
-def paths(root: Path, day: dt.date) -> tuple[Path, Path]:
-    folder = day_dir(root, day)
-    return folder / "activity.md", folder / "daily-report.md"
+def diary_dir(root: Path) -> Path:
+    return root / "日报"
+
+
+def record_path(root: Path, day: dt.date) -> Path:
+    return record_dir(root) / f"{day:%Y-%m-%d}.md"
+
+
+def short_date_label(day: dt.date, include_year: bool = False) -> str:
+    if include_year:
+        return f"{day.year}.{day.month}.{day.day}"
+    return f"{day.month}.{day.day}"
 
 
 def parse_dates(value: str) -> list[dt.date]:
@@ -81,11 +90,6 @@ def parse_selected_dates(args: argparse.Namespace) -> list[dt.date]:
     return [parse_date(getattr(args, "date", None))]
 
 
-def parse_range(args: argparse.Namespace) -> tuple[dt.date, dt.date]:
-    dates = parse_selected_dates(args)
-    return min(dates), max(dates)
-
-
 def date_span(start: dt.date, end: dt.date) -> Iterable[dt.date]:
     current = start
     while current <= end:
@@ -100,16 +104,21 @@ def is_contiguous(dates: list[dt.date]) -> bool:
 
 def report_path(root: Path, dates: list[dt.date]) -> Path:
     ordered = sorted(dates)
+    include_year = len({day.year for day in ordered}) > 1
+
     if len(ordered) == 1:
-        return paths(root, ordered[0])[1]
+        file_name = f"{short_date_label(ordered[0], include_year)} 日报.md"
+        return diary_dir(root) / file_name
 
     if is_contiguous(ordered):
-        folder_name = f"{ordered[0]:%Y-%m-%d}_to_{ordered[-1]:%Y-%m-%d}"
+        label = (
+            f"{short_date_label(ordered[0], include_year)}-"
+            f"{short_date_label(ordered[-1], include_year)}"
+        )
     else:
-        folder_name = "_plus_".join(f"{day:%Y-%m-%d}" for day in ordered)
+        label = "、".join(short_date_label(day, include_year) for day in ordered)
 
-    folder = root / f"{ordered[0]:%Y}" / folder_name
-    return folder / "daily-report.md"
+    return diary_dir(root) / f"{label} 日报.md"
 
 
 def clean_lines(values: Iterable[str] | None) -> list[str]:
@@ -205,8 +214,8 @@ def mark_reported_text(text: str, report: Path) -> tuple[str, int]:
 def append_entry(args: argparse.Namespace) -> None:
     root = resolve_root(args)
     day = parse_date(args.date)
-    activity, _report = paths(root, day)
-    activity.parent.mkdir(parents=True, exist_ok=True)
+    record = record_path(root, day)
+    record.parent.mkdir(parents=True, exist_ok=True)
 
     now = dt.datetime.now().strftime("%H:%M")
     entry_id = dt.datetime.now().strftime("%Y%m%d-%H%M%S") + "-" + uuid.uuid4().hex[:6]
@@ -235,14 +244,14 @@ def append_entry(args: argparse.Namespace) -> None:
         entry.append("- Notes:\n")
         entry.extend(f"  - {line}\n" for line in note_lines)
 
-    if not activity.exists():
+    if not record.exists():
         header = f"# AI coding activity - {day:%Y-%m-%d}\n"
-        activity.write_text(header, encoding="utf-8")
+        record.write_text(header, encoding="utf-8")
 
-    with activity.open("a", encoding="utf-8") as handle:
+    with record.open("a", encoding="utf-8") as handle:
         handle.writelines(entry)
 
-    print(activity)
+    print(record)
 
 
 def show_day(args: argparse.Namespace) -> None:
@@ -250,14 +259,14 @@ def show_day(args: argparse.Namespace) -> None:
     dates = parse_selected_dates(args)
     print(f"report: {report_path(root, dates)}")
     for day in dates:
-        activity, _report = paths(root, day)
+        record = record_path(root, day)
         print()
-        print(f"activity: {activity}")
+        print(f"record: {record}")
         print()
-        if activity.exists():
-            print(render_activity(activity.read_text(encoding="utf-8"), args.all))
+        if record.exists():
+            print(render_activity(record.read_text(encoding="utf-8"), args.all))
         else:
-            print("(no activity log yet)")
+            print("(no work record yet)")
 
 
 def write_report(args: argparse.Namespace) -> None:
@@ -279,14 +288,14 @@ def write_report(args: argparse.Namespace) -> None:
     if not args.no_mark_reported:
         marked = 0
         for day in dates:
-            activity, _unused = paths(root, day)
-            if not activity.exists():
+            record = record_path(root, day)
+            if not record.exists():
                 continue
             updated, changed_count = mark_reported_text(
-                activity.read_text(encoding="utf-8"), report
+                record.read_text(encoding="utf-8"), report
             )
             if changed_count:
-                activity.write_text(updated, encoding="utf-8")
+                record.write_text(updated, encoding="utf-8")
                 marked += changed_count
         print(f"marked_reported: {marked}")
     print(report)
