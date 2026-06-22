@@ -16,7 +16,7 @@ Use `scripts/daily_log.py` for all filesystem writes so paths and document struc
 
 ## Storage
 
-Always ask the user where to store the AI coding daily documents before the first write unless the path is already explicit in the conversation or `AI_CODING_DAILY_ROOT` is set. Do not silently choose a default path.
+Always ask the user where to store the AI coding daily documents before the first write unless the path is already explicit in the conversation, saved in this skill's local config, or `AI_CODING_DAILY_ROOT` is set. Do not silently choose a default path.
 
 Ask in Chinese when needed:
 
@@ -24,7 +24,19 @@ Ask in Chinese when needed:
 你希望 AI 编码日报保存到哪个本地目录？
 ```
 
-Then pass the chosen directory with `--root <path>`. If the user has configured `AI_CODING_DAILY_ROOT`, use it without asking again.
+Then save the chosen directory once:
+
+```bash
+python3 <skill>/scripts/daily_log.py configure --root "/path/chosen/by/user"
+```
+
+This writes a local config file at `~/.config/ai-coding-daily/config.json` unless `AI_CODING_DAILY_CONFIG` points elsewhere. Treat that config as the durable memory shared by future invocations. If the user has configured `AI_CODING_DAILY_ROOT`, use it without asking again. Use `--root <path>` on individual commands only for an explicit one-off override.
+
+Inspect saved config with:
+
+```bash
+python3 <skill>/scripts/daily_log.py config
+```
 
 The script creates exactly two first-level directories under the user-chosen root:
 
@@ -84,7 +96,6 @@ Run:
 
 ```bash
 python3 <skill>/scripts/daily_log.py append \
-  --root "/path/chosen/by/user" \
   --tool "Codex" \
   --project "agent-framework" \
   --title "Validated monitoring smoke path" \
@@ -101,6 +112,12 @@ Before generating a report, read the accumulated unreported log. For a single da
 
 ```bash
 python3 <skill>/scripts/daily_log.py show --root "/path/chosen/by/user" --date YYYY-MM-DD
+```
+
+After `configure` has saved a root, omit `--root`:
+
+```bash
+python3 <skill>/scripts/daily_log.py show --date YYYY-MM-DD
 ```
 
 For a report covering a continuous date range:
@@ -137,6 +154,12 @@ Write a single-day report with:
 python3 <skill>/scripts/daily_log.py write-report --root "/path/chosen/by/user" --date YYYY-MM-DD --from-file /tmp/report.md
 ```
 
+After `configure` has saved a root, omit `--root`:
+
+```bash
+python3 <skill>/scripts/daily_log.py write-report --date YYYY-MM-DD --from-file /tmp/report.md
+```
+
 Write a multi-day report with:
 
 ```bash
@@ -156,6 +179,7 @@ Never overwrite an existing report file silently when the new report drops meani
 ## Quality Bar
 
 - Keep session entries small enough to append often.
+- Use the saved config before asking for a storage path; ask only when no saved root, no explicit `--root`, and no `AI_CODING_DAILY_ROOT` is available.
 - Keep final reports natural and manager-readable.
 - Distinguish verified facts from pending checks.
 - Prefer unreported entries when generating reports; include already reported entries only when the user explicitly wants regeneration or correction.

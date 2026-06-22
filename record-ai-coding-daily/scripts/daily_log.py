@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import json
 import os
 from pathlib import Path
 import re
@@ -14,19 +15,56 @@ import uuid
 
 
 UNREPORTED_VALUES = {"", "no", "false", "pending", "unreported"}
+CONFIG_ENV = "AI_CODING_DAILY_CONFIG"
 
 
-def resolve_root(args: argparse.Namespace) -> Path:
-    if getattr(args, "root", None):
+def config_path() -> Path:
+    env_path = os.environ.get(CONFIG_ENV)
+    if env_path:
+        return Path(env_path).expanduser()
+    return Path("~/.config/ai-coding-daily/config.json").expanduser()
+
+
+def load_config() -> dict[str, str]:
+    path = config_path()
+    if not path.exists():
+        return {}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise SystemExit(f"Invalid config file: {path}") from exc
+    if not isinstance(data, dict):
+        raise SystemExit(f"Invalid config file: {path}")
+    return {str(key): str(value) for key, value in data.items()}
+
+
+def save_config(root: Path) -> Path:
+    path = config_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {"root": str(root.expanduser())}
+    path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    return path
+
+
+def resolve_root(args: argparse.Namespace | None = None) -> Path:
+    if args and getattr(args, "root", None):
         return Path(args.root).expanduser()
 
     env_root = os.environ.get("AI_CODING_DAILY_ROOT")
     if env_root:
         return Path(env_root).expanduser()
 
+    configured_root = load_config().get("root")
+    if configured_root:
+        return Path(configured_root).expanduser()
+
     raise SystemExit(
         "Daily report root is required. Ask the user where to store AI coding "
-        "daily documents, then pass --root or set AI_CODING_DAILY_ROOT."
+        "daily documents, then run configure, pass --root, or set "
+        "AI_CODING_DAILY_ROOT."
     )
 
 
@@ -301,6 +339,25 @@ def write_report(args: argparse.Namespace) -> None:
     print(report)
 
 
+def configure(args: argparse.Namespace) -> None:
+    root = Path(args.daily_root).expanduser()
+    record_dir(root).mkdir(parents=True, exist_ok=True)
+    diary_dir(root).mkdir(parents=True, exist_ok=True)
+    path = save_config(root)
+    print(f"config: {path}")
+    print(f"root: {root}")
+
+
+def show_config(_args: argparse.Namespace) -> None:
+    path = config_path()
+    print(f"config: {path}")
+    config = load_config()
+    if config.get("root"):
+        print(f"root: {Path(config['root']).expanduser()}")
+    else:
+        print("(no root configured)")
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", help="User-chosen daily report root directory")
@@ -340,6 +397,18 @@ def build_parser() -> argparse.ArgumentParser:
         help="Do not mark selected activity entries as reported after writing",
     )
     write.set_defaults(func=write_report)
+
+    config = subparsers.add_parser("configure", help="Remember the daily report root")
+    config.add_argument(
+        "--root",
+        dest="daily_root",
+        required=True,
+        help="User-chosen daily report root directory to remember",
+    )
+    config.set_defaults(func=configure)
+
+    show_saved = subparsers.add_parser("config", help="Show saved configuration")
+    show_saved.set_defaults(func=show_config)
 
     return parser
 
