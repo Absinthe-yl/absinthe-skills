@@ -245,13 +245,17 @@ Draft the weekly report with exactly these sections:
 ###### 2.1 <对应需求或主题名>
 ##### 三、效率
 ###### 3.1 <提效工具或方法名>
+##### 四、其他
+###### 4.1 <其他事项名>
 ```
 
 In `一、需求`, each `1.x` subsection should be concise and leader-facing. It must cover the problem/objective, value, and how to measure success, but compress them into 1-2 short sentences rather than a detailed background explanation.
 
-In `二、进展`, each `2.x` subsection should correspond to one demand or work stream and use 1-2 short sentences to state what was done, current status, and important remaining work.
+In `二、进展`, each `2.x` subsection should correspond to one demand or work stream and use Chinese parenthesized numbering `（1）`, `（2）`, `（3）` for concrete progress items. Keep each numbered item short and status-oriented.
 
 Include `三、效率` only when the work records mention reusable personal/team tools, methods, automation, standards, or workflow improvements. Omit the entire section when there is no real efficiency content; never print `（可选）` in the final report heading.
+
+Include `四、其他` only when the work records mention sharing sessions, meetings, cross-team communication, support work, or other meaningful items that do not fit demand/progress/efficiency. Use Chinese parenthesized numbering under each `4.x` subsection.
 
 Write the weekly report with:
 
@@ -273,8 +277,9 @@ Use the saved txt/md format unless the user explicitly overrides it with `--form
 - Distinguish verified facts from pending checks.
 - Prefer unreported entries when generating reports; include already reported entries only when the user explicitly wants regeneration or correction.
 - Do not maintain a weekly inclusion marker. Generating a weekly report must not hide records from later weekly review.
-- Weekly reports must use `##### 一、需求`, `##### 二、进展`, and `##### 三、效率` when efficiency content exists; do not use the old goal/measurement/progress/summary four-section format and do not include `（可选）` in the visible report.
+- Weekly reports must use `##### 一、需求`, `##### 二、进展`, `##### 三、效率` when efficiency content exists, and `##### 四、其他` when other meaningful items exist; do not use the old goal/measurement/progress/summary four-section format and do not include `（可选）` in the visible report.
 - Weekly reports should be concise leader-facing updates, not expanded daily reports. Avoid long background paragraphs and avoid starting every item with phrases like "本周重点处理", "本周继续完善", or "本周围绕".
+- In weekly `进展`, `效率`, and `其他` sections, use `（1）`, `（2）`, `（3）` numbered items instead of long paragraphs or Markdown bullets.
 - Use concrete, plain subsection titles such as "dag-viewer 调试台", "菜单推荐 Agent", or "MR 冲突收敛"; avoid abstract official titles such as "本地调试台可观测能力建设".
 - Never mention script compatibility details, missing parameters, `show-week --all`, or fallback file-reading mechanics in user-facing weekly-report responses.
 - Make work records rich enough for a zero-context AI to generate weekly reports from files alone.

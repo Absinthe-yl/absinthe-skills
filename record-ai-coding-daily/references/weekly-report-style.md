@@ -19,11 +19,16 @@ Use this exact section shape:
 
 ##### 三、效率
 ###### 3.1 <提效工具或方法名>
+
+##### 四、其他
+###### 4.1 <其他事项名>
 ```
 
 Use Markdown heading markers even when the saved report format is `txt`, because the weekly-report convention explicitly requires this shape. For `txt`, avoid other Markdown syntax such as lists, links, code fences, and backticks unless the user asks.
 
 Omit the entire `##### 三、效率` section when there is no real efficiency content in the work records. Never include `（可选）` in the visible report heading.
+
+Omit the entire `##### 四、其他` section when there are no meaningful sharing sessions, meetings, coordination items, support work, or miscellaneous items in the work records.
 
 ## Style
 
@@ -39,6 +44,7 @@ Omit the entire `##### 三、效率` section when there is no real efficiency co
 - Weekly reports are not daily reports. Do not expand every technical detail; keep each subsection to 1-2 short sentences unless the user explicitly asks for detail.
 - Do not begin every subsection with repeated openings such as "本周重点处理", "本周继续完善", or "本周围绕". Start directly with the work or status.
 - Use short, concrete subsection titles. Good titles look like "dag-viewer 调试台", "菜单推荐 Agent", "MR 冲突收敛", or "[LLM] MCP 数据能力". Bad titles look like "本地调试台可观测能力建设" or "Agent 框架工程化与接入能力建设".
+- In `二、进展`, `三、效率`, and `四、其他`, write concrete items with Chinese parenthesized numbering: `（1）`, `（2）`, `（3）`. Do not use Markdown bullets for those sections.
 - Do not mention how records were read. Never include script-version notes, missing parameter notes, `show-week --all`, or fallback file-reading explanations in the report or user-facing response.
 - Avoid code blocks unless the user explicitly asks for them.
 
@@ -67,29 +73,44 @@ Good demand style:
 
 Use one `###### 2.x` subsection per corresponding demand or progress stream. The subsection order should usually match `一、需求`.
 
-Each progress subsection should explain only the most important facts:
+Each progress subsection should use numbered items and explain only the most important facts:
 
 - What the user actually completed, implemented, verified, or decided this week.
 - What evidence supports the progress, such as working behavior, checks, tests, comparisons, or platform observations.
 - What remains pending, blocked, or risky.
 
-Keep each progress subsection to 1-2 short sentences. It is acceptable to include simple status words such as `已完成`, `进行中`, or `待补测` when that makes the report easier to scan.
+Use `（1）`, `（2）`, `（3）` for progress items. Keep each item short; it is acceptable to include simple status words such as `已完成`, `进行中`, or `待补测` when that makes the report easier to scan.
 
 Good progress style:
 
 ```text
 ###### 2.1 dag-viewer 调试台
-已补齐执行记录、节点状态、时间线、节点检查器和观测摘要，并完成基础页面与脚本检查。复杂图布局和批量 trace 对比暂缓，后续按调试需求继续补。
+（1）已补齐执行记录、节点状态、时间线、节点检查器和观测摘要，并完成后端查询、详情和统计接口。
+（2）完成缩放、平移、适应视图、主题切换和节点动效优化，已通过脚本检查和浏览器页面验证。
 ```
 
 ### ##### 三、效率
 
 Include this section only when the records mention reusable personal/team tooling, process improvements, automation, templates, standards, or methods that reduce repeated work.
 
-Efficiency content should explain what changed and who benefits in 1-2 short sentences. Good topics include:
+Efficiency content should explain what changed and who benefits through `（1）`, `（2）`, `（3）` numbered items. Good topics include:
 
 - A reusable skill, script, template, or checklist that saves repeated prompting or manual work.
 - A standardized smoke flow, validation method, or reporting format that reduces communication cost.
 - A debugging or review workflow that helps the team locate problems faster.
 
 Do not include this section just to restate ordinary project progress.
+
+### ##### 四、其他
+
+Include this section only when the records mention sharing sessions, meetings, cross-team communication, support work, planning, or other items worth showing to a leader but not suitable for `需求`, `进展`, or `效率`.
+
+Use one `###### 4.x` subsection per topic and `（1）`, `（2）`, `（3）` numbered items under it.
+
+Good other style:
+
+```text
+###### 4.1 分享会
+（1）当前 Agent 开发框架进展。
+（2）Agent 相关技术分享。
+```
