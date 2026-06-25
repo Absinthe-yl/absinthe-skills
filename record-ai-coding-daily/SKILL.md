@@ -84,12 +84,9 @@ Each activity entry includes:
 ```text
 - Entry ID: <unique-id>
 - Reported: no
-- Weekly Reported: no
 ```
 
 After writing a report, `scripts/daily_log.py write-report` marks selected unreported entries as reported by replacing `Reported: no` with the report file path. Use this marker, not only the date, to decide whether content still needs to be included in a future report.
-
-After writing a weekly report, `scripts/daily_log.py write-weekly-report` marks selected weekly-unreported entries by replacing `Weekly Reported: no` with the weekly report file path. Daily and weekly markers are independent.
 
 ## Tool Compatibility
 
@@ -237,6 +234,7 @@ python3 <skill>/scripts/daily_log.py show-week --date YYYY-MM-DD
 ```
 
 The target date can be any day in the week. The script derives that week's Monday and prints the final weekly report path.
+Do not add `--all` to `show-week`; weekly output already includes the full week. If an older installed script or another AI attempt has parameter differences, handle that silently and continue. Do not tell the user about script-version differences, missing `show-week --all`, or "directly reading work record files"; those are implementation details and should not appear in the final response or report.
 
 Draft the weekly report with exactly these sections:
 
@@ -245,15 +243,15 @@ Draft the weekly report with exactly these sections:
 ###### 1.1 <需求或主题名>
 ##### 二、进展
 ###### 2.1 <对应需求或主题名>
-##### 三、效率（可选）
+##### 三、效率
 ###### 3.1 <提效工具或方法名>
 ```
 
-In `一、需求`, each `1.x` subsection must include the problem/objective, value, and how to measure success. It may also include scope, users, constraints, risks, or acceptance criteria when the work records support them.
+In `一、需求`, each `1.x` subsection should be concise and leader-facing. It must cover the problem/objective, value, and how to measure success, but compress them into 1-2 short sentences rather than a detailed background explanation.
 
-In `二、进展`, each `2.x` subsection should correspond to one demand or work stream and describe what changed this week, what evidence exists, and what remains pending.
+In `二、进展`, each `2.x` subsection should correspond to one demand or work stream and use 1-2 short sentences to state what was done, current status, and important remaining work.
 
-Include `三、效率（可选）` only when the work records mention reusable personal/team tools, methods, automation, standards, or workflow improvements. Omit the entire section when there is no real efficiency content.
+Include `三、效率` only when the work records mention reusable personal/team tools, methods, automation, standards, or workflow improvements. Omit the entire section when there is no real efficiency content; never print `（可选）` in the final report heading.
 
 Write the weekly report with:
 
@@ -261,7 +259,7 @@ Write the weekly report with:
 python3 <skill>/scripts/daily_log.py write-weekly-report --date YYYY-MM-DD --from-file /tmp/weekly-report.md
 ```
 
-Use the saved txt/md format unless the user explicitly overrides it with `--format md` or `--format txt` before the subcommand. After writing, the script marks selected records as weekly reported without changing daily report markers.
+Use the saved txt/md format unless the user explicitly overrides it with `--format md` or `--format txt` before the subcommand. Weekly reports always read the full target week of work records; do not filter by a reported state.
 
 ## Quality Bar
 
@@ -274,8 +272,11 @@ Use the saved txt/md format unless the user explicitly overrides it with `--form
 - Keep work records and reports centered on what the user did or completed; mention AI tools only as source metadata when useful.
 - Distinguish verified facts from pending checks.
 - Prefer unreported entries when generating reports; include already reported entries only when the user explicitly wants regeneration or correction.
-- Keep daily and weekly report markers separate; generating one must not hide content from the other.
-- Weekly reports must use `##### 一、需求`, `##### 二、进展`, and optionally `##### 三、效率（可选）`; do not use the old goal/measurement/progress/summary four-section format.
+- Do not maintain a weekly inclusion marker. Generating a weekly report must not hide records from later weekly review.
+- Weekly reports must use `##### 一、需求`, `##### 二、进展`, and `##### 三、效率` when efficiency content exists; do not use the old goal/measurement/progress/summary four-section format and do not include `（可选）` in the visible report.
+- Weekly reports should be concise leader-facing updates, not expanded daily reports. Avoid long background paragraphs and avoid starting every item with phrases like "本周重点处理", "本周继续完善", or "本周围绕".
+- Use concrete, plain subsection titles such as "dag-viewer 调试台", "菜单推荐 Agent", or "MR 冲突收敛"; avoid abstract official titles such as "本地调试台可观测能力建设".
+- Never mention script compatibility details, missing parameters, `show-week --all`, or fallback file-reading mechanics in user-facing weekly-report responses.
 - Make work records rich enough for a zero-context AI to generate weekly reports from files alone.
 - Do not claim platform-side closure unless the activity log says the platform was actually checked.
 - Do not include long code blocks in the final report unless the user explicitly requests them.

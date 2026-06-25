@@ -306,6 +306,12 @@ def mark_reported_text(
     return "".join(header + [line for block in updated_blocks for line in block]), changed_count
 
 
+def without_weekly_marker(text: str) -> str:
+    return "\n".join(
+        line for line in text.splitlines() if not line.startswith("- Weekly Reported:")
+    )
+
+
 def append_entry(args: argparse.Namespace) -> None:
     root = resolve_root(args)
     day = parse_date(args.date)
@@ -321,7 +327,6 @@ def append_entry(args: argparse.Namespace) -> None:
         f"\n## {now} - {title}\n",
         f"- Entry ID: {entry_id}\n",
         "- Reported: no\n",
-        "- Weekly Reported: no\n",
         f"- AI tool: {tool}\n",
     ]
     if args.project:
@@ -415,14 +420,7 @@ def show_week(args: argparse.Namespace) -> None:
         print(f"record: {record}")
         print()
         if record.exists():
-            print(
-                render_activity(
-                    record.read_text(encoding="utf-8"),
-                    args.all,
-                    field="Weekly Reported",
-                    empty_label="unreported weekly",
-                )
-            )
+            print(without_weekly_marker(record.read_text(encoding="utf-8")))
         else:
             print("(no work record yet)")
 
@@ -444,21 +442,6 @@ def write_weekly_report(args: argparse.Namespace) -> None:
         raise SystemExit("Refusing to write an empty weekly report")
 
     report.write_text(text + "\n", encoding="utf-8")
-    if not args.no_mark_reported:
-        marked = 0
-        for record_day in week_dates(day):
-            record = record_path(root, record_day)
-            if not record.exists():
-                continue
-            updated, changed_count = mark_reported_text(
-                record.read_text(encoding="utf-8"),
-                report,
-                field="Weekly Reported",
-            )
-            if changed_count:
-                record.write_text(updated, encoding="utf-8")
-                marked += changed_count
-        print(f"marked_weekly_reported: {marked}")
     print(report)
 
 
@@ -538,17 +521,16 @@ def build_parser() -> argparse.ArgumentParser:
         "show-week", help="Show work records for the week containing a date"
     )
     show_weekly.add_argument("--date", help="Any date in the target week")
-    show_weekly.add_argument("--all", action="store_true", help="Show weekly-reported entries too")
+    show_weekly.add_argument(
+        "--all",
+        action="store_true",
+        help=argparse.SUPPRESS,
+    )
     show_weekly.set_defaults(func=show_week)
 
     weekly = subparsers.add_parser("write-weekly-report", help="Write final weekly report")
     weekly.add_argument("--date", help="Any date in the target week")
     weekly.add_argument("--from-file", help="Weekly report file to write")
-    weekly.add_argument(
-        "--no-mark-reported",
-        action="store_true",
-        help="Do not mark selected activity entries as weekly reported after writing",
-    )
     weekly.set_defaults(func=write_weekly_report)
 
     config = subparsers.add_parser("configure", help="Remember the daily report root")
