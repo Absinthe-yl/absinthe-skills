@@ -1,4 +1,4 @@
 interface:
   display_name: "AI Coding Daily Report"
-  short_description: "Turn AI coding activity into daily reports"
-  default_prompt: "Use $record-ai-coding-daily to log this AI coding session or generate today's daily report."
+  short_description: "Turn AI coding activity into daily and weekly reports"
+  default_prompt: "Use $record-ai-coding-daily to log this AI coding session or generate a daily or weekly report."

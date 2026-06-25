@@ -1,6 +1,6 @@
 ---
 name: record-ai-coding-daily
-description: Record and summarize the user's AI coding tool activity into local date-organized daily and weekly report documents, with remembered storage root and txt/md report format preferences. Use when the user asks to log what they just did with AI coding tools such as Claude, Codex, CodeBuddy, Cursor, Copilot, or similar assistants; append an entry after an AI coding session; read today's accumulated AI work notes; configure the local report memory; generate a final Chinese daily report with completed work, TODOs, and problems/thoughts; or generate a weekly report covering the week of a date with goals, measurement, progress, and summary.
+description: Record and summarize the user's AI coding tool activity into local date-organized daily and weekly report documents, with remembered storage root and txt/md report format preferences. Use when the user asks to log what they just did with AI coding tools such as Claude, Codex, CodeBuddy, Cursor, Copilot, or similar assistants; append an entry after an AI coding session; read today's accumulated AI work notes; configure the local report memory; generate a final Chinese daily report with completed work, TODOs, and problems/thoughts; or generate a weekly report covering the week of a date with demand, progress, and optional efficiency sections.
 ---
 
 # Record AI Coding Daily
@@ -111,9 +111,18 @@ Capture:
 - Completed user work in prose-oriented bullets.
 - TODOs or next checks.
 - Problems, risks, or thoughts.
+- Weekly-report context when known: demand/problem, value, measurement or acceptance signals, current progress, and efficiency impact.
 - Optional source, such as thread/window name, repo path, or issue id.
 
 Prefer a factual work log over a celebratory summary. Include technical names, endpoints, tests, metrics, and platform names when they matter, but avoid dumping large code snippets. Good records sound like "完成了 dag-viewer 调试台体验优化" or "确认了配置加载链路", not "让 Codex 优化了页面".
+
+Make `工作记录/` understandable to a zero-context AI that only reads the files later. When the session contributes to a larger weekly objective, include enough context to recover:
+
+- What user need, engineering problem, or delivery objective this work belongs to.
+- Why it matters to users, the team, reliability, delivery efficiency, or risk control.
+- How success can be judged, such as visible behavior, smoke results, platform checks, test pass counts, acceptance criteria, or reduced manual work.
+- What concrete progress changed in this session.
+- Whether the session produced a reusable tool, method, or workflow that improves personal or team efficiency.
 
 Run:
 
@@ -122,7 +131,11 @@ python3 <skill>/scripts/daily_log.py append \
   --tool "Codex" \
   --project "agent-framework" \
   --title "Validated monitoring smoke path" \
+  --demand "提升 Agent 框架真实环境验收能力，避免只看本地日志就误判上线质量。" \
+  --value "让监控链路能被稳定验证，降低新增业务接入和生产排障风险。" \
+  --measure "以真实请求、平台可见性和关键测试通过作为验收信号。" \
   --done "完成了音乐推荐链路验证，确认请求能走通并产生关键观测信息。" \
+  --progress "已确认应用侧请求链路和观测上报正常，平台侧查询留作下一步。" \
   --todo "继续在真实平台确认观测数据可查。" \
   --issue "当前已确认应用侧正常，平台侧可见性仍需补验。"
 ```
@@ -227,12 +240,20 @@ The target date can be any day in the week. The script derives that week's Monda
 
 Draft the weekly report with exactly these sections:
 
-```text
-一、目标解决什么问题、这个问题的价值
-二、如何衡量
-三、进展
-四、总结（如有）
+```markdown
+##### 一、需求
+###### 1.1 <需求或主题名>
+##### 二、进展
+###### 2.1 <对应需求或主题名>
+##### 三、效率（可选）
+###### 3.1 <提效工具或方法名>
 ```
+
+In `一、需求`, each `1.x` subsection must include the problem/objective, value, and how to measure success. It may also include scope, users, constraints, risks, or acceptance criteria when the work records support them.
+
+In `二、进展`, each `2.x` subsection should correspond to one demand or work stream and describe what changed this week, what evidence exists, and what remains pending.
+
+Include `三、效率（可选）` only when the work records mention reusable personal/team tools, methods, automation, standards, or workflow improvements. Omit the entire section when there is no real efficiency content.
 
 Write the weekly report with:
 
@@ -254,6 +275,8 @@ Use the saved txt/md format unless the user explicitly overrides it with `--form
 - Distinguish verified facts from pending checks.
 - Prefer unreported entries when generating reports; include already reported entries only when the user explicitly wants regeneration or correction.
 - Keep daily and weekly report markers separate; generating one must not hide content from the other.
+- Weekly reports must use `##### 一、需求`, `##### 二、进展`, and optionally `##### 三、效率（可选）`; do not use the old goal/measurement/progress/summary four-section format.
+- Make work records rich enough for a zero-context AI to generate weekly reports from files alone.
 - Do not claim platform-side closure unless the activity log says the platform was actually checked.
 - Do not include long code blocks in the final report unless the user explicitly requests them.
 

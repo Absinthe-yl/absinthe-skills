@@ -331,6 +331,11 @@ def append_entry(args: argparse.Namespace) -> None:
     if args.tags:
         entry.append(f"- Tags: {', '.join(clean_lines(args.tags))}\n")
 
+    entry.append(bullet_block("Demand/problem", args.demand))
+    entry.append(bullet_block("Value", args.value))
+    entry.append(bullet_block("Measurement", args.measure))
+    entry.append(bullet_block("Progress", args.progress))
+    entry.append(bullet_block("Efficiency", args.efficiency))
     entry.append(bullet_block("Completed", args.done))
     entry.append(bullet_block("TODO", args.todo))
     entry.append(bullet_block("Problems/thoughts", args.issue))
@@ -499,6 +504,11 @@ def build_parser() -> argparse.ArgumentParser:
     append.add_argument("--done", action="append", help="Completed work item")
     append.add_argument("--todo", action="append", help="Follow-up item")
     append.add_argument("--issue", action="append", help="Problem, risk, or thought")
+    append.add_argument("--demand", action="append", help="Weekly demand, problem, or objective")
+    append.add_argument("--value", action="append", help="Why the demand matters")
+    append.add_argument("--measure", action="append", help="Success signal or acceptance check")
+    append.add_argument("--progress", action="append", help="Weekly progress context")
+    append.add_argument("--efficiency", action="append", help="Reusable tool, method, or workflow impact")
     append.add_argument("--note", action="append", help="Additional note")
     append.add_argument("--tags", action="append", help="Tag")
     append.set_defaults(func=append_entry)
