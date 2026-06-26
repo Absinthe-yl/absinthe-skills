@@ -1,0 +1,7 @@
+interface:
+  display_name: "规划文档写作"
+  short_description: "按固定章节层级生成中文规划文档"
+  default_prompt: "Use $write-planning-doc to turn my notes into a structured Chinese planning document."
+
+policy:
+  allow_implicit_invocation: true
