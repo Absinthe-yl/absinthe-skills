@@ -1,9 +1,9 @@
 ---
-name: write-planning-doc
+name: format-docs
 description: Generate structured Chinese planning documents from rough notes, project context, technical procedures, deployment steps, roadmap ideas, meeting notes, or scattered requirements. Use when Codex needs to write, rewrite, expand, or normalize a planning/方案/规划/操作说明 document with numbered Chinese sections, decimal subsections, ordered points, command snippets, examples, tips, assumptions, TODOs, and practical implementation steps.
 ---
 
-# Write Planning Doc
+# Format Docs
 
 ## Overview
 
