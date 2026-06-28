@@ -46,8 +46,8 @@
 将仓库中的 skills 同步到 Codex 全局目录：
 
 ```powershell
-$src = "C:\Users\22353\Desktop\skills"
-$dst = "C:\Users\22353\.codex\skills"
+$src = (Get-Location).Path
+$dst = Join-Path $env:USERPROFILE ".codex\skills"
 New-Item -ItemType Directory -Force -Path $dst | Out-Null
 Get-ChildItem -Path $src -Directory |
   Where-Object { Test-Path (Join-Path $_.FullName "SKILL.md") } |
@@ -101,5 +101,5 @@ git push
 如果需要让 Codex 立即使用最新版本，同步到：
 
 ```text
-C:\Users\22353\.codex\skills
+%USERPROFILE%\.codex\skills
 ```
