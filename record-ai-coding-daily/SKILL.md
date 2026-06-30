@@ -83,10 +83,9 @@ Each activity entry includes:
 
 ```text
 - Entry ID: <unique-id>
-- Reported: no
 ```
 
-After writing a report, `scripts/daily_log.py write-report` marks selected unreported entries as reported by replacing `Reported: no` with the report file path. Use this marker, not only the date, to decide whether content still needs to be included in a future report.
+Daily and weekly reports leave activity entries unchanged. Regenerating a report for the same date or week may overwrite the existing report file.
 
 ## Tool Compatibility
 
@@ -141,7 +140,7 @@ Use `--date YYYY-MM-DD` only when the user asks to record a non-current day. The
 
 ### 2. Inspect accumulated notes
 
-Before generating a report, read the accumulated unreported log. For a single day:
+Before generating a report, read the accumulated log. For a single day:
 
 ```bash
 python3 <skill>/scripts/daily_log.py show --root "/path/chosen/by/user" --date YYYY-MM-DD
@@ -171,9 +170,7 @@ For non-contiguous dates, such as Friday and the following Monday only:
 python3 <skill>/scripts/daily_log.py show --root "/path/chosen/by/user" --dates YYYY-MM-DD,YYYY-MM-DD
 ```
 
-By default, `show` omits entries already marked as reported. Use `--all` only when the user explicitly wants to inspect or regenerate already reported content.
-
-If the selected dates have no unreported activity entries, ask the user whether to include already reported entries, pick different dates, or provide raw work notes. Do not invent a report.
+If the selected dates have no activity entries, ask the user whether to pick different dates or provide raw work notes. Do not invent a report.
 
 ### 3. Generate the final daily report
 
@@ -221,7 +218,7 @@ Write a report for non-contiguous dates, such as Friday and the following Monday
 python3 <skill>/scripts/daily_log.py write-report --root "/path/chosen/by/user" --dates YYYY-MM-DD,YYYY-MM-DD --from-file /tmp/report.md
 ```
 
-After writing, the script marks the selected unreported entries as reported. Use `--no-mark-reported` only for dry runs or explicit user requests.
+Writing a report overwrites the target report file and leaves source records untouched.
 
 Never overwrite an existing report file silently when the new report drops meaningful content from the previous report. If a previous report exists, read it first and merge or explicitly preserve relevant material.
 
@@ -261,7 +258,7 @@ Write the weekly report with:
 python3 <skill>/scripts/daily_log.py write-weekly-report --date YYYY-MM-DD --from-file /tmp/weekly-report.md
 ```
 
-Use the saved txt/md format unless the user explicitly overrides it with `--format md` or `--format txt` before the subcommand. Weekly reports always read the full target week of work records; do not filter by a reported state.
+Use the saved txt/md format unless the user explicitly overrides it with `--format md` or `--format txt` before the subcommand. Weekly reports always read the full target week of work records; do not filter source records.
 
 ## Quality Bar
 
@@ -273,8 +270,8 @@ Use the saved txt/md format unless the user explicitly overrides it with `--form
 - Avoid code-level jargon in daily reports. Prefer "完成菜单推荐能力开发并验证成功/失败链路" over function names, route names, config keys, or internal node names.
 - Keep work records and reports centered on what the user did or completed; mention AI tools only as source metadata when useful.
 - Distinguish verified facts from pending checks.
-- Prefer unreported entries when generating reports; include already reported entries only when the user explicitly wants regeneration or correction.
-- Do not maintain a weekly inclusion marker. Generating a weekly report must not hide records from later weekly review.
+- Generating a report must not hide source records from later review.
+- Never mention internal metadata, inclusion state, or marker mechanics in user-facing report responses.
 - Weekly reports must use `#### 一、需求进展`, `#### 二、效率` when efficiency content exists, and `#### 三、其他` when other meaningful items exist; do not use the old separated demand/progress format or the old goal/measurement/progress/summary four-section format, and do not include `（可选）` in the visible report.
 - Weekly reports should be concise leader-facing updates, not expanded daily reports. Avoid long background paragraphs and avoid starting every item with phrases like "本周重点处理", "本周继续完善", or "本周围绕".
 - In weekly `需求进展`, `效率`, and `其他` sections, use `（1）`, `（2）`, `（3）` numbered items for progress/detail lists instead of long paragraphs or Markdown bullets.
