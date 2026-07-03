@@ -39,7 +39,10 @@ Omit the entire `#### 三、其他` section when there are no meaningful sharing
 - Write for both leaders and teammates: leaders should see priority, value, status, risk, and next steps; teammates should understand context, interfaces, dependencies, and where to continue.
 - Focus on work streams and outcomes rather than chat-window chronology.
 - Center the report on what the user completed, verified, clarified, or decided. Mention AI tools only when their usage itself is relevant.
-- Group same-module or same-objective work together instead of splitting it by day, AI window, or small implementation step.
+- Group same-module, same-platform, same-Agent, same-service, same-data-domain, or same-objective work together instead of splitting it by day, AI window, stage, or small implementation step.
+- Before drafting, first make a grouping pass over all records. Merge records into business/workstream buckets, then write one `##### 1.x` subsection per bucket. Do not create separate subsections just because the work happened in different sessions, involved different technical layers, or had multiple validation stages.
+- Prefer fewer, fuller topics over many repetitive topics. A dense week usually reads better as 4-6 substantial demand-progress subsections than 8-12 fragmented subsections.
+- Split one bucket only when the reader would naturally assign different goals, owners, delivery timelines, or acceptance criteria. If the goal and acceptance path are the same, keep it together.
 - Preserve concrete evidence from the work records when it helps judgment: project names, platform names, metrics, test results, acceptance checks, known verification gaps, or user-visible behavior.
 - Distinguish verified progress from planned or pending validation.
 - Keep code-level details out of the main prose. Prefer "完成本地调试台体验优化" over internal function names, route names, config keys, or node names.
@@ -58,6 +61,16 @@ Omit the entire `#### 三、其他` section when there are no meaningful sharing
 ### #### 一、需求进展
 
 Use one `##### 1.x` subsection per major demand, objective, or work stream. The subsection title should be short and concrete, such as `新增 Agent 框架接入`, `dag-viewer 调试台`, `mmeulershowagentserver`, or `langfuse 相关`.
+
+Grouping is more important than chronology. If several records all serve the same delivery line, write them under one subsection and use numbered progress items to show the different parts. Do not split them into separate `1.x` topics just because they cover reliability, field completion, environment validation, replay validation, UI support, or interface work.
+
+Concrete grouping expectations:
+
+- Langfuse reliability, field completion, test-environment validation, export configuration, span semantics, and trace search should normally become one topic such as `Langfuse 链路接入与验收`, unless the records describe two unrelated Langfuse deliverables.
+- `situation-awareness-10s` DAG migration, replay validation, branch semantics, MMData/iLogs preparation, DAG Viewer support, and production-readiness checks should normally become one topic such as `situation-awareness-10s 迁移验收`, because they all support the same Adams-to-LangGraph migration.
+- Gift data debugging, designed-gift data source confirmation, tuning-table support, and `mmeulermcpapiserver` gift interfaces should normally become one topic such as `礼物数据与接口能力`, because they all support gift-data delivery and validation.
+- DAG Viewer work can be a separate topic only when it is an independent tool deliverable. If the viewer changes mainly support `situation-awareness-10s` migration acceptance, fold them into the migration topic.
+- MMData should be separate only when it is the main deliverable. If it is supporting a specific Agent or migration, fold it into that Agent or migration topic.
 
 Inside each `##### 1.x` subsection, use this exact shape:
 
