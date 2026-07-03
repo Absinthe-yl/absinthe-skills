@@ -60,17 +60,17 @@ Omit the entire `#### 三、其他` section when there are no meaningful sharing
 
 ### #### 一、需求进展
 
-Use one `##### 1.x` subsection per major demand, objective, or work stream. The subsection title should be short and concrete, such as `新增 Agent 框架接入`, `dag-viewer 调试台`, `mmeulershowagentserver`, or `langfuse 相关`.
+Use one `##### 1.x` subsection per major demand, objective, or work stream. The subsection title should be short and concrete, using the actual business capability, platform, service, Agent, data domain, or tool name from the records.
 
 Grouping is more important than chronology. If several records all serve the same delivery line, write them under one subsection and use numbered progress items to show the different parts. Do not split them into separate `1.x` topics just because they cover reliability, field completion, environment validation, replay validation, UI support, or interface work.
 
-Concrete grouping expectations:
+General grouping expectations:
 
-- Langfuse reliability, field completion, test-environment validation, export configuration, span semantics, and trace search should normally become one topic such as `Langfuse 链路接入与验收`, unless the records describe two unrelated Langfuse deliverables.
-- `situation-awareness-10s` DAG migration, replay validation, branch semantics, MMData/iLogs preparation, DAG Viewer support, and production-readiness checks should normally become one topic such as `situation-awareness-10s 迁移验收`, because they all support the same Adams-to-LangGraph migration.
-- Gift data debugging, designed-gift data source confirmation, tuning-table support, and `mmeulermcpapiserver` gift interfaces should normally become one topic such as `礼物数据与接口能力`, because they all support gift-data delivery and validation.
-- DAG Viewer work can be a separate topic only when it is an independent tool deliverable. If the viewer changes mainly support `situation-awareness-10s` migration acceptance, fold them into the migration topic.
-- MMData should be separate only when it is the main deliverable. If it is supporting a specific Agent or migration, fold it into that Agent or migration topic.
+- Same platform or observability chain: fold reliability fixes, field completion, configuration, environment validation, and query verification into one topic when the goal is the same platform integration or acceptance.
+- Same Agent or migration: fold DAG construction, replay validation, branch semantics, monitoring/reporting support, visualization support, and production-readiness checks into one topic when they all support the same Agent delivery.
+- Same data domain: fold data source confirmation, offline tuning material, interface implementation, downstream validation, and known field gaps into one topic when they support the same data capability.
+- Same support tool: make it a separate topic only when the tool itself is an independent deliverable. If the tool change mainly supports another Agent, migration, or platform acceptance, fold it into that parent topic.
+- Same monitoring or reporting capability: make it separate only when it is the main deliverable. If it supports a specific service, Agent, migration, or platform integration, fold it into that parent topic.
 
 Inside each `##### 1.x` subsection, use this exact shape:
 
