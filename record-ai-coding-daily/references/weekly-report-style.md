@@ -1,6 +1,8 @@
 # Weekly Report Style
 
-Use this reference when turning one calendar week of `工作记录/` files into a final weekly report under `周报/`.
+Use this reference when turning one natural week or an explicit date range of `工作记录/` files into a final weekly report under `周报/`.
+
+Explicit ranges override natural-week assumptions. If the user says "上周五到这周四", generate exactly that period even though it is not Monday-Sunday. The report filename still uses the Monday anchor: use the Monday inside the selected range when present, otherwise use the Monday of the range start.
 
 ## Output Shape
 
@@ -33,14 +35,17 @@ Omit the entire `#### 三、其他` section when there are no meaningful sharing
 
 - Write in Chinese.
 - Prefer concise, leader-facing updates.
+- The final weekly report should usually be at least 70 lines when there is enough source material. Expand with useful demand context, delivery progress, validation evidence, risks, next steps, and team-facing notes rather than filler.
+- Write for both leaders and teammates: leaders should see priority, value, status, risk, and next steps; teammates should understand context, interfaces, dependencies, and where to continue.
 - Focus on work streams and outcomes rather than chat-window chronology.
 - Center the report on what the user completed, verified, clarified, or decided. Mention AI tools only when their usage itself is relevant.
-- Group same-module or same-objective work together instead of splitting it by day or AI window.
+- Group same-module or same-objective work together instead of splitting it by day, AI window, or small implementation step.
 - Preserve concrete evidence from the work records when it helps judgment: project names, platform names, metrics, test results, acceptance checks, known verification gaps, or user-visible behavior.
 - Distinguish verified progress from planned or pending validation.
 - Keep code-level details out of the main prose. Prefer "完成本地调试台体验优化" over internal function names, route names, config keys, or node names.
 - Make the report understandable to a reader who has no chat context and only sees the weekly report.
-- Weekly reports are not daily reports. Do not expand every technical detail; keep each subsection to 1-2 short sentences unless the user explicitly asks for detail.
+- Weekly reports are not daily reports. Keep meaningful context and outcome, but do not copy every temporary command, probe, or chat-window detail.
+- Do not separately report low leader-value noise such as git conflict mechanics, pure parameter explanation, temporary probe attempts, or one-off debugging process unless it materially changes delivery risk, schedule, ownership, or final conclusion. Preserve the delivery conclusion instead.
 - Do not begin every subsection with repeated openings such as "本周重点处理", "本周继续完善", or "本周围绕". Start directly with the work or status.
 - Use short, concrete subsection titles. Good titles look like "dag-viewer 调试台", "菜单推荐 Agent", "MR 冲突收敛", or "[LLM] MCP 数据能力". Bad titles look like "本地调试台可观测能力建设" or "Agent 框架工程化与接入能力建设".
 - Under each `##### 1.x` item in `一、需求进展`, always write `###### 需求：` and `###### 进展：` in that order.
@@ -65,7 +70,7 @@ Inside each `##### 1.x` subsection, use this exact shape:
 （2）<progress item>
 ```
 
-`需求：` must cover at least these ideas, but compress them into 1-2 short sentences:
+`需求：` must cover at least these ideas. Use 1-3 concise sentences when needed so leaders and teammates can understand priority and value:
 
 - Target problem or objective: what is being solved or delivered.
 - Value: why this matters to users, the team, reliability, delivery speed, production readiness, observability, maintainability, or risk reduction.
@@ -79,7 +84,9 @@ Do not write long background paragraphs. Do not invent business value or metrics
 - What evidence supports the progress, such as working behavior, checks, tests, comparisons, or platform observations.
 - What remains pending, blocked, or risky.
 
-Use `（1）`, `（2）`, `（3）` for progress items. Keep each item short; it is acceptable to include simple status words such as `已完成`, `进行中`, `待补测`, or expected completion dates when that makes the report easier to scan.
+Use `（1）`, `（2）`, `（3）` for progress items. Keep related progress together under the same topic. It is acceptable to include simple status words such as `已完成`, `进行中`, `待补测`, or expected completion dates when that makes the report easier to scan.
+
+For each substantial topic, include enough numbered items to make the weekly report useful: delivered work, validation or evidence, current risk, and next step when present.
 
 Preserve useful image or attachment links under the relevant `进展：` subsection when the work records include them and they help explain the work.
 

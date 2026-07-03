@@ -204,10 +204,42 @@ def week_dates(day: dt.date) -> list[dt.date]:
     return [monday + dt.timedelta(days=offset) for offset in range(7)]
 
 
-def weekly_report_path(root: Path, day: dt.date, report_format: str) -> Path:
-    monday = week_monday(day)
+def weekly_file_monday(dates: list[dt.date]) -> dt.date:
+    ordered = sorted(dates)
+    for day in date_span(ordered[0], ordered[-1]):
+        if day.weekday() == 0:
+            return day
+    return week_monday(ordered[0])
+
+
+def weekly_report_path(root: Path, dates: list[dt.date], report_format: str) -> Path:
+    monday = weekly_file_monday(dates)
     suffix = normalize_report_format(report_format) or "md"
     return weekly_dir(root) / f"{monday.year}-M{monday.month}-{monday:%Y%m%d}.{suffix}"
+
+
+def parse_weekly_dates(args: argparse.Namespace) -> list[dt.date]:
+    has_range = getattr(args, "start_date", None) or getattr(args, "end_date", None)
+    has_date = getattr(args, "date", None)
+    has_dates = getattr(args, "dates", None)
+
+    selected_modes = sum(bool(value) for value in [has_date, has_range, has_dates])
+    if selected_modes > 1:
+        raise SystemExit("Use only one of --date, --dates, or --start-date/--end-date")
+
+    if has_dates:
+        return parse_dates(args.dates)
+
+    if has_range:
+        if not args.start_date or not args.end_date:
+            raise SystemExit("--start-date and --end-date must be used together")
+        start = parse_date(args.start_date)
+        end = parse_date(args.end_date)
+        if start > end:
+            raise SystemExit("--start-date must be on or before --end-date")
+        return list(date_span(start, end))
+
+    return week_dates(parse_date(getattr(args, "date", None)))
 
 
 def clean_lines(values: Iterable[str] | None) -> list[str]:
@@ -341,9 +373,9 @@ def write_report(args: argparse.Namespace) -> None:
 def show_week(args: argparse.Namespace) -> None:
     root = resolve_root(args)
     report_format = resolve_report_format(args)
-    day = parse_date(args.date)
-    print(f"weekly_report: {weekly_report_path(root, day, report_format)}")
-    for record_day in week_dates(day):
+    dates = parse_weekly_dates(args)
+    print(f"weekly_report: {weekly_report_path(root, dates, report_format)}")
+    for record_day in dates:
         record = record_path(root, record_day)
         print()
         print(f"record: {record}")
@@ -357,8 +389,8 @@ def show_week(args: argparse.Namespace) -> None:
 def write_weekly_report(args: argparse.Namespace) -> None:
     root = resolve_root(args)
     report_format = resolve_report_format(args)
-    day = parse_date(args.date)
-    report = weekly_report_path(root, day, report_format)
+    dates = parse_weekly_dates(args)
+    report = weekly_report_path(root, dates, report_format)
     report.parent.mkdir(parents=True, exist_ok=True)
 
     if args.from_file:
@@ -447,9 +479,12 @@ def build_parser() -> argparse.ArgumentParser:
     write.set_defaults(func=write_report)
 
     show_weekly = subparsers.add_parser(
-        "show-week", help="Show work records for the week containing a date"
+        "show-week", help="Show work records for a weekly report period"
     )
     show_weekly.add_argument("--date", help="Any date in the target week")
+    show_weekly.add_argument("--dates", help="Comma-separated dates in YYYY-MM-DD format")
+    show_weekly.add_argument("--start-date", help="Start date in YYYY-MM-DD format")
+    show_weekly.add_argument("--end-date", help="End date in YYYY-MM-DD format")
     show_weekly.add_argument(
         "--all",
         action="store_true",
@@ -459,6 +494,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     weekly = subparsers.add_parser("write-weekly-report", help="Write final weekly report")
     weekly.add_argument("--date", help="Any date in the target week")
+    weekly.add_argument("--dates", help="Comma-separated dates in YYYY-MM-DD format")
+    weekly.add_argument("--start-date", help="Start date in YYYY-MM-DD format")
+    weekly.add_argument("--end-date", help="End date in YYYY-MM-DD format")
     weekly.add_argument("--from-file", help="Weekly report file to write")
     weekly.set_defaults(func=write_weekly_report)
 
