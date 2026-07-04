@@ -1,6 +1,6 @@
 ---
 name: record-ai-coding-daily
-description: Record and summarize the user's AI coding tool activity into local date-organized daily and weekly report documents, with remembered storage root and txt/md report format preferences. Use when the user asks to log what they just did with AI coding tools such as Claude, Codex, CodeBuddy, Cursor, Copilot, or similar assistants; append an entry after an AI coding session; read today's accumulated AI work notes; configure the local report memory; generate a final Chinese daily report with completed work, TODOs, and problems/thoughts; or generate a weekly report covering the week of a date with demand, progress, and optional efficiency sections.
+description: Record and summarize the user's AI coding tool activity into local date-organized daily and weekly report documents, with remembered storage root and txt/md report format preferences. Use when the user asks to log what they just did with AI coding tools such as Claude, Codex, CodeBuddy, Cursor, Copilot, or similar assistants; append an entry after an AI coding session; read today's accumulated AI work notes; configure the local report memory; generate a final Chinese daily report with completed work, TODOs, and problems/thoughts; or generate a weekly report for a natural week or explicit date range such as last Friday to this Thursday with demand-progress, efficiency, and other sections.
 ---
 
 # Record AI Coding Daily
@@ -11,7 +11,7 @@ Maintain a local, date-organized record of AI-assisted coding work. Use this ski
 
 1. **Session logging**: after each AI window/session, append a concise entry to today's activity document.
 2. **Daily report generation**: near the end of a day or after a multi-day work span, read the accumulated activity documents and write a polished Chinese daily report.
-3. **Weekly report generation**: read one calendar week of work records and write a Chinese weekly report.
+3. **Weekly report generation**: read one natural week or explicit date range of work records and write a Chinese weekly report.
 
 Use `scripts/daily_log.py` for all filesystem writes so paths and document structure stay consistent.
 
@@ -70,23 +70,22 @@ If the saved report format is `txt`, use the same names with `.txt`:
 
 Treat files in `工作记录/` as the incremental raw log and files in `日报/` as final user-facing reports.
 
-Weekly reports are stored in `周报/`, with filenames based on the target week's Monday:
+Weekly reports are stored in `周报/`, with filenames based on the Monday of the selected report period:
 
 ```text
 <root>/周报/2026-M6-20260615.md
 <root>/周报/2026-M6-20260615.txt
 ```
 
-In this name, `M6` means June and `20260615` is the Monday of that week.
+In this name, `M6` means June and `20260615` is the Monday used for that report period. For an explicit range such as Friday to the following Thursday, use the Monday inside that range as the filename anchor.
 
 Each activity entry includes:
 
 ```text
 - Entry ID: <unique-id>
-- Reported: no
 ```
 
-After writing a report, `scripts/daily_log.py write-report` marks selected unreported entries as reported by replacing `Reported: no` with the report file path. Use this marker, not only the date, to decide whether content still needs to be included in a future report.
+Daily and weekly reports leave activity entries unchanged. Regenerating a report for the same date or week may overwrite the existing report file.
 
 ## Tool Compatibility
 
@@ -141,7 +140,7 @@ Use `--date YYYY-MM-DD` only when the user asks to record a non-current day. The
 
 ### 2. Inspect accumulated notes
 
-Before generating a report, read the accumulated unreported log. For a single day:
+Before generating a report, read the accumulated log. For a single day:
 
 ```bash
 python3 <skill>/scripts/daily_log.py show --root "/path/chosen/by/user" --date YYYY-MM-DD
@@ -171,9 +170,7 @@ For non-contiguous dates, such as Friday and the following Monday only:
 python3 <skill>/scripts/daily_log.py show --root "/path/chosen/by/user" --dates YYYY-MM-DD,YYYY-MM-DD
 ```
 
-By default, `show` omits entries already marked as reported. Use `--all` only when the user explicitly wants to inspect or regenerate already reported content.
-
-If the selected dates have no unreported activity entries, ask the user whether to include already reported entries, pick different dates, or provide raw work notes. Do not invent a report.
+If the selected dates have no activity entries, ask the user whether to pick different dates or provide raw work notes. Do not invent a report.
 
 ### 3. Generate the final daily report
 
@@ -221,19 +218,33 @@ Write a report for non-contiguous dates, such as Friday and the following Monday
 python3 <skill>/scripts/daily_log.py write-report --root "/path/chosen/by/user" --dates YYYY-MM-DD,YYYY-MM-DD --from-file /tmp/report.md
 ```
 
-After writing, the script marks the selected unreported entries as reported. Use `--no-mark-reported` only for dry runs or explicit user requests.
+Writing a report overwrites the target report file and leaves source records untouched.
 
 Never overwrite an existing report file silently when the new report drops meaningful content from the previous report. If a previous report exists, read it first and merge or explicitly preserve relevant material.
 
 ### 4. Generate the final weekly report
 
-Read `references/weekly-report-style.md` before drafting the report. Then inspect work records for the week containing the target date:
+Read `references/weekly-report-style.md` before drafting the report. Then inspect work records for the requested period.
+
+For a natural week containing the target date:
 
 ```bash
 python3 <skill>/scripts/daily_log.py show-week --date YYYY-MM-DD
 ```
 
-The target date can be any day in the week. The script derives that week's Monday and prints the final weekly report path.
+For an explicit non-natural week such as "上周五到这周四":
+
+```bash
+python3 <skill>/scripts/daily_log.py show-week --start-date YYYY-MM-DD --end-date YYYY-MM-DD
+```
+
+For non-contiguous selected dates:
+
+```bash
+python3 <skill>/scripts/daily_log.py show-week --dates YYYY-MM-DD,YYYY-MM-DD
+```
+
+The target date can be any day in the week. The script derives the report file path from Monday: for natural weeks, the Monday of that week; for explicit ranges, the Monday inside the selected range when present, otherwise the Monday of the range start.
 Do not add `--all` to `show-week`; weekly output already includes the full week. If an older installed script or another AI attempt has parameter differences, handle that silently and continue. Do not tell the user about script-version differences, missing `show-week --all`, or "directly reading work record files"; those are implementation details and should not appear in the final response or report.
 
 Draft the weekly report with exactly these sections:
@@ -261,7 +272,13 @@ Write the weekly report with:
 python3 <skill>/scripts/daily_log.py write-weekly-report --date YYYY-MM-DD --from-file /tmp/weekly-report.md
 ```
 
-Use the saved txt/md format unless the user explicitly overrides it with `--format md` or `--format txt` before the subcommand. Weekly reports always read the full target week of work records; do not filter by a reported state.
+For explicit ranges, write with:
+
+```bash
+python3 <skill>/scripts/daily_log.py write-weekly-report --start-date YYYY-MM-DD --end-date YYYY-MM-DD --from-file /tmp/weekly-report.md
+```
+
+Use the saved txt/md format unless the user explicitly overrides it with `--format md` or `--format txt` before the subcommand. Weekly reports always read the full target week of work records; do not filter source records.
 
 ## Quality Bar
 
@@ -273,10 +290,15 @@ Use the saved txt/md format unless the user explicitly overrides it with `--form
 - Avoid code-level jargon in daily reports. Prefer "完成菜单推荐能力开发并验证成功/失败链路" over function names, route names, config keys, or internal node names.
 - Keep work records and reports centered on what the user did or completed; mention AI tools only as source metadata when useful.
 - Distinguish verified facts from pending checks.
-- Prefer unreported entries when generating reports; include already reported entries only when the user explicitly wants regeneration or correction.
-- Do not maintain a weekly inclusion marker. Generating a weekly report must not hide records from later weekly review.
+- Generating a report must not hide source records from later review.
+- Never mention internal metadata, inclusion state, or marker mechanics in user-facing report responses.
 - Weekly reports must use `#### 一、需求进展`, `#### 二、效率` when efficiency content exists, and `#### 三、其他` when other meaningful items exist; do not use the old separated demand/progress format or the old goal/measurement/progress/summary four-section format, and do not include `（可选）` in the visible report.
-- Weekly reports should be concise leader-facing updates, not expanded daily reports. Avoid long background paragraphs and avoid starting every item with phrases like "本周重点处理", "本周继续完善", or "本周围绕".
+- Weekly reports should usually be at least 70 lines when there is enough source material. They should be richer than daily reports, written for leaders and teammates, and organized for review and alignment.
+- Weekly reports should not become raw daily logs. Avoid long background paragraphs and avoid starting every item with phrases like "本周重点处理", "本周继续完善", or "本周围绕".
+- Merge related content under the same `1.x` topic before drafting. Keep work from the same module, platform, Agent, service, data domain, or delivery objective together instead of splitting by date, AI window, stage, or minor implementation step.
+- Use one topic for one business/workstream unless there is a clearly different owner-facing goal or acceptance path. Reliability fixes, field completion, configuration work, environment validation, UI support, data debugging, and interface development should be folded into the same topic when they support the same delivery objective.
+- Prefer fewer, fuller weekly topics over many repetitive 1.x sections. A dense week usually reads better as 4-6 substantial `需求进展` topics than 8-12 fragmented topics with similar wording.
+- Do not separately report low leader-value noise such as git conflict mechanics, pure parameter explanation, temporary probe attempts, or one-off debugging process unless it materially changes delivery risk, schedule, ownership, or final conclusion.
 - In weekly `需求进展`, `效率`, and `其他` sections, use `（1）`, `（2）`, `（3）` numbered items for progress/detail lists instead of long paragraphs or Markdown bullets.
 - Use concrete, plain subsection titles such as "dag-viewer 调试台", "菜单推荐 Agent", or "MR 冲突收敛"; avoid abstract official titles such as "本地调试台可观测能力建设".
 - Never mention script compatibility details, missing parameters, `show-week --all`, or fallback file-reading mechanics in user-facing weekly-report responses.
