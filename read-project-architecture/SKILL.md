@@ -1,13 +1,15 @@
 ---
 name: read-project-architecture
-description: 快速初读陌生软件项目的架构，面向后续编码 AI 工具和人类开发者。Use when Codex needs a concise Chinese project/system overview, one-sentence purpose summary, architecture shape, important guidance docs such as AGENTS.md/CODEBUDDY.md/HARNESS.md, entry points, core directories, module responsibilities, and coding orientation without deep audit, exhaustive file reading, or code changes.
+description: 快速初读陌生软件项目的架构，主要服务后续 AI 编码任务。Use when Codex needs to quickly understand a project before coding by extracting purpose, architecture shape, guidance docs such as AGENTS.md/CODEBUDDY.md/HARNESS.md, entry points, core directories, module responsibilities, and coding orientation internally, then give the user only a brief readiness summary unless a full architecture report is explicitly requested.
 ---
 
 # Read Project Architecture
 
 ## Overview
 
-使用这个 skill 在编码前快速建立项目架构地图。目标读者同时包括 AI 编码工具和人类开发者，因此输出要短、清楚、可继续行动。
+使用这个 skill 在编码前快速建立项目架构地图。主要目标读者是当前 AI 编码助手自己：快速理解项目形状，马上进入后续开发、修改、排查或评审任务。
+
+默认不要向用户输出完整架构报告。阅读完成后只简短说明“我已经阅读完毕/已建立项目上下文”，再给少量关键结论让用户知道你读到了什么。只有用户明确要求“输出完整架构报告/项目架构文档/详细说明”时，才展开完整报告。
 
 默认使用中文回复，除非用户明确要求其他语言。不要改代码，除非用户另行要求。不要做完整业务逻辑审计、全量依赖图、安全审计或完整测试调查。
 
@@ -34,7 +36,7 @@ description: 快速初读陌生软件项目的架构，面向后续编码 AI 工
 - 工具输出应服务架构判断；如果某个文件只能提供实现细节，停止继续读取。
 - `Directory Map` 只列核心目录，通常 6-12 项。
 - `Core Modules` 只列核心模块，通常 4-8 项。
-- 最终报告保持紧凑，面向“下一步该读哪里、该怎么理解架构”。
+- 对用户的最终输出保持很短，面向“我已理解项目，可以继续开发”。详细架构信息主要保留在当前上下文中供后续任务使用。
 
 ## Reading Order
 
@@ -85,9 +87,27 @@ description: 快速初读陌生软件项目的架构，面向后续编码 AI 工
 
 如果指导文档与用户请求或更高优先级规则冲突，遵循更高优先级规则，并在输出中简短标注冲突。
 
-## Output Format
+## Default Output Format
 
-必须以一句话总结开头。报告要方便 AI 工具和人类开发者快速理解项目，不要写成长文档。
+默认输出面向用户的简短确认，不要写完整架构文档。推荐格式：
+
+```markdown
+我已经快速读完项目结构，可以继续后续开发任务。
+
+简要结论：
+- 项目用途：……
+- 技术栈/架构形态：……
+- 主要入口：……
+- 后续开发优先关注：……
+```
+
+控制在 4-6 行左右。不要输出大表格、完整目录地图、完整模块列表或详细数据流，除非用户明确要求。
+
+如果用户的问题本身包含后续开发任务，例如“先读项目再帮我改 X”，阅读后不要停在架构总结；给一句简短确认后直接继续执行开发任务。
+
+## Full Report Format
+
+只有用户明确要求完整架构报告、保存架构文档、给其他人交接项目时，才使用下面的完整格式：
 
 ```markdown
 # 项目架构初读
@@ -127,4 +147,4 @@ description: 快速初读陌生软件项目的架构，面向后续编码 AI 工
 
 ## Quality Bar
 
-结果应该让新的 AI 编码工具或人类开发者在几分钟内理解项目形状。保持架构优先、上下文节省，只提供足够定位后续编码入口的信息，不替代深度实现阅读。
+结果应该让当前 AI 编码助手在几分钟内理解项目形状，并能马上进入后续任务。保持架构优先、上下文节省，对用户默认只暴露少量高信号结论，不把内部阅读笔记完整倒出来。

@@ -1,4 +1,4 @@
 interface:
   display_name: "快速阅读项目架构"
-  short_description: "轻量初读项目架构"
-  default_prompt: "使用 $read-project-architecture 快速了解这个项目的架构，面向后续 AI 编码工具和人类开发者。"
+  short_description: "为后续编码快速建立项目上下文"
+  default_prompt: "使用 $read-project-architecture 快速阅读项目，建立后续编码上下文，只向我简短说明阅读结果。"
