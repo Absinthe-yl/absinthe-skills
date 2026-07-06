@@ -1,0 +1,7 @@
+interface:
+  display_name: "接口文档写作"
+  short_description: "按固定模板生成接口请求响应示例、默认值说明与字段速查表"
+  default_prompt: "Use $write-interface-docs to generate service module, interface name, minimal/maximal request examples, response examples, and a field quick reference from my API definition."
+
+policy:
+  allow_implicit_invocation: true
