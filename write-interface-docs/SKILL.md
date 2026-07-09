@@ -19,6 +19,7 @@ For each interface, use this structure:
 ````markdown
 ##### 一、<接口名称>
 ###### 1.1 接口信息
+接口内容：<用 1-3 句说明这个接口的用途、输入对象、输出结果或主要业务动作>
 服务模块：<服务模块>
 接口名称：<接口名称>
 req：
@@ -58,6 +59,7 @@ resp：
 ````
 
 If multiple interfaces are requested, number them as `一、二、三...`, and use matching subsection numbers such as `1.1 / 1.2`, `2.1 / 2.2`, `3.1 / 3.2`.
+Treat `接口内容` as a required item for every interface.
 
 ## Source Priority
 
@@ -74,18 +76,23 @@ If two sources conflict, prefer executable code over examples or prose comments.
 ## Writing Workflow
 
 1. Identify the service module and interface name exactly as they appear in source artifacts.
-2. Enumerate request and response fields, including nested objects, arrays, enums, and common wrapper fields.
-3. Determine which request fields are truly required by checking validation code, non-optional schema markers, or explicit comments.
-4. Determine defaults from actual code or authoritative comments. If no explicit default exists, write `-`.
-5. Draft the minimal request example with only required top-level and nested fields.
-6. Draft the maximal request example with all documented optional fields that can be filled from source.
-7. Draft a success-path response example that reflects the real response shape. Do not add speculative error-only fields unless the interface always returns them.
-8. Build the quick-reference table so a reader can scan the contract without reading the examples.
+2. Summarize `接口内容` in reader-friendly Chinese: explain what the interface does, what core input it consumes, and what result it returns or what action it completes.
+3. Enumerate request and response fields, including nested objects, arrays, enums, and common wrapper fields.
+4. Determine which request fields are truly required by checking validation code, non-optional schema markers, or explicit comments.
+5. Determine defaults from actual code or authoritative comments. If no explicit default exists, write `-`.
+6. Draft the minimal request example with only required top-level and nested fields.
+7. Draft the maximal request example with all documented optional fields that can be filled from source.
+8. Draft a success-path response example that reflects the real response shape. Do not add speculative error-only fields unless the interface always returns them.
+9. Build the quick-reference table so a reader can scan the contract without reading the examples.
 
 ## Example Construction Rules
 
 Follow these rules when generating examples:
 
+- Write `接口内容` before `服务模块` and `接口名称`.
+- Keep `接口内容` short and readable, usually 1-3 sentences or 1 compact paragraph.
+- Ground `接口内容` in comments, requirement text, function names, return semantics, or handler logic. If the business purpose is not clear from source, write `待确认：` and state the most certain part only.
+- Explain business intent in natural Chinese, but keep interface names, service names, and field names source-faithful.
 - Use fenced `json` code blocks for every request and response example.
 - Use realistic placeholder values that match type and business meaning.
 - Preserve actual field names exactly; do not translate keys into Chinese.
@@ -112,6 +119,7 @@ Use this table format:
 Before finishing, verify all of the following:
 
 - The service module and interface name are present for every interface.
+- The interface purpose is summarized under `接口内容`.
 - The minimal request example contains only mandatory fields.
 - The maximal request example does not contain invented fields.
 - The response example matches the documented response shape.
