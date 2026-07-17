@@ -1,0 +1,4 @@
+interface:
+  display_name: "创建 Subagent"
+  short_description: "按规范创建并复用 Codex subagent 配置"
+  default_prompt: "使用 $create-subagent 为当前任务创建合适的 subagent，并按已保存偏好选择模型与 reasoning_effort。"
