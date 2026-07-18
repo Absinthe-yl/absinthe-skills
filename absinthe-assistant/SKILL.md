@@ -1,7 +1,6 @@
 ---
 name: absinthe-assistant
 description: 通用助手基线，固化研究、写作、分析、代码实现、前端原型、可视化、自动化、PPT 制作和多 Agent 协作的统一工作流。Use when the task is open-ended, spans multiple capability domains, needs role switching, requires orchestration across research/writing/building/reviewing, or when no more specialized project skill clearly fits. Prefer routing to a dedicated skill first when there is an exact match, then use this skill as the fallback and coordination layer.
-agent_created: true
 ---
 
 # Absinthe Assistant

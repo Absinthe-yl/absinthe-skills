@@ -1,7 +1,6 @@
 ---
 name: resume-optimizer
 description: This skill should be used when a user wants to score, polish, tailor, or export a resume/CV (中文简历 or English resume). Triggers include "resume", "CV", "polish my resume", "score my resume", "tailor for this job", "optimize for ATS", "export resume to PDF/Word". It combines recruiter-eye rewriting, a 100-point scoring model, a 40+ item checklist, JD-based customization, and multi-format export (Word/Markdown/HTML/LaTeX/PDF).
-agent_created: true
 ---
 
 # Resume Optimizer

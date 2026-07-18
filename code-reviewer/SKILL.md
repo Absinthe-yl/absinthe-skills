@@ -1,7 +1,6 @@
 ---
 name: code-reviewer
 description: This skill should be used when the user asks to review code, a pull request, a diff, or a code snippet; when they want feedback on correctness, security, maintainability, performance, or test coverage; or when preparing a review before merging. It provides a priority-tiered checklist (blocker/suggestion/nit), a structured comment format, and a constructive review workflow.
-agent_created: true
 ---
 
 # Code Reviewer

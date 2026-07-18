@@ -1,7 +1,6 @@
 ---
 name: database-optimizer
 description: This skill should be used when the user wants to diagnose slow SQL, interpret EXPLAIN or EXPLAIN ANALYZE output, design or review schema and indexing strategy, eliminate N+1 query patterns, plan safe PostgreSQL/MySQL/Supabase/PlanetScale migrations, or tune connection pooling. Triggers include requests such as "优化 SQL", "慢查询", "执行计划", "加索引", "设计表结构", "N+1", "Supabase 性能", and "PlanetScale schema".
-agent_created: true
 ---
 
 # Database Optimizer

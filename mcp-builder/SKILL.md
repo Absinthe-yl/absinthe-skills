@@ -1,7 +1,6 @@
 ---
 name: mcp-builder
 description: This skill should be used when the user wants to design, scaffold, implement, review, or harden a Model Context Protocol (MCP) server. It fits API wrappers, database tools, filesystem adapters, workflow automation servers, existing MCP server refactors, and tasks that require well-named tools, typed schemas, strong error handling, security guardrails, and runnable delivery instructions.
-agent_created: true
 ---
 
 # MCP Builder

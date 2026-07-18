@@ -1,10 +1,6 @@
 ---
 name: wechat-miniprogram
-description: This is the umbrella skill for building WeChat Mini Programs (微信小程序). It covers the full development lifecycle: project scaffolding and architecture, the unified network/login layer, WeChat Pay and subscription messages, performance optimization, review submission and compliance (privacy, domains, content security), and ecosystem integration (sharing, Official Account, Channels, Enterprise WeChat, WebSocket, cross-platform). Route to the matching sub-module under this folder based on the task.
-description_zh: 微信小程序开发（全集）
-description_en: WeChat Mini Program (Full Stack)
-disable: false
-agent_created: true
+description: "This is the umbrella skill for building WeChat Mini Programs (微信小程序). It covers the full development lifecycle: project scaffolding and architecture, the unified network/login layer, WeChat Pay and subscription messages, performance optimization, review submission and compliance (privacy, domains, content security), and ecosystem integration (sharing, Official Account, Channels, Enterprise WeChat, WebSocket, cross-platform). Route to the matching sub-module under this folder based on the task."
 ---
 
 # WeChat Mini Program (umbrella skill)
