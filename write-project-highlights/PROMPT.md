@@ -24,6 +24,8 @@ Highlights should be relatively independent from each other. If two candidate po
 
 Prefer architecture and excellent technical points over operational details. The output should make an interviewer want to ask follow-up questions about design choices, boundaries, tradeoffs, performance, reliability, scalability, or engineering abstraction, and then help the candidate answer those follow-ups clearly.
 
+Resume bullets must read like backend project experience, not framework source notes. Start from the engineering problem and architectural decision, then explain the mechanism and impact. If a point only says "I connected components, added configuration, migrated an example, counted nodes, or passed tests", it is not strong enough to stand alone.
+
 ## Input You May Receive
 
 The user may provide any mix of:
@@ -47,11 +49,21 @@ Before writing, rank candidate points by interview value:
 
 1. High value: architecture design, core workflow orchestration, runtime extensibility, graph/DAG modeling, configuration-driven assembly, async/queue/lock/transaction consistency, RAG/Agent workflow design, performance optimization, stability improvement, observability architecture, fault isolation, cost reduction, automation with measurable efficiency gains, business conversion or accuracy improvement.
 2. Medium value: reusable component design, integration with external systems, data pipeline, permission/rule engine, deployment or operations improvement with clear impact.
-3. Low value: standalone failure strategy, only adding tests, listing many files/modules, routine CRUD, UI page completion, dependency upgrades, documentation, simple configuration, generic "used framework X".
+3. Low value: standalone failure strategy, only adding tests, listing many files/modules, counting migrated nodes/edges, showing single-case diff results, routine CRUD, UI page completion, dependency upgrades, documentation, simple configuration, generic "used framework X".
 
 Drop low-value points unless the user explicitly asks to keep them. If a low-value fact can support a stronger point, fold it into that stronger point instead of making it a standalone bullet.
 
 Do not turn `failure strategy`, `exception handling`, `fallback`, or `retry` into a standalone highlight unless it is clearly part of a larger reliability architecture with production impact. Usually merge it into execution lifecycle governance, observability, concurrency control, or high-availability design.
+
+Apply this interview-value gate before writing every resume bullet. Keep a point only when at least three answers are "yes":
+
+- Would an interviewer consider this a real engineering problem rather than implementation inventory?
+- Can the candidate explain a design choice, tradeoff, data flow, execution flow, consistency model, concurrency model, or abstraction boundary?
+- Does it connect to business value, service stability, developer efficiency, performance, extensibility, or maintainability?
+- Is there enough material to discuss difficulty and alternatives for 2-3 minutes?
+- Is the result stronger than "a demo ran, tests passed, nodes were migrated, or components were connected"?
+
+Verification details such as migrated topology size, replay case names, `diff=0`, matched boundaries, and test pass counts are evidence, not resume highlights. Use them only as supporting proof inside a broader point such as "workflow migration consistency assurance" or "regression verification platform", and only when that broader point has real architectural value.
 
 For one project, cover multiple modules or technical angles. Avoid writing all bullets around the same lifecycle or same abstraction. Prefer selecting 4-5 different dimensions such as:
 
@@ -62,6 +74,14 @@ For one project, cover multiple modules or technical angles. Avoid writing all b
 - Engineering platform: configuration platform, deployment pipeline, environment isolation, reusable SDK/component, integration boundary, or developer experience.
 
 When reading a codebase or raw project notes, first identify the major modules and their architectural value, then choose the strongest non-overlapping angles. Do not simply summarize every visible module.
+
+For each selected angle, translate source-level names into interviewer-facing engineering language:
+
+- Convert internal configuration names into "multi-service dynamic assembly", "environment-specific configuration", or "runtime routing" only when that describes a real design.
+- Convert workflow or graph class names into "workflow orchestration", "graph execution", "branch/fan-out/fan-in control", or "state transfer".
+- Convert component wrapper names into "external dependency governance", "unified call semantics", or "observable dependency boundary" only when there is a reliability or maintainability reason.
+- Convert demo agent names, fixture names, case names, node counts, and edge counts into validation evidence, not standalone accomplishments.
+- Keep framework and middleware names mainly in `技术架构` and `技术点拆解`; keep resume bullets readable for a backend interviewer.
 
 Group tightly related work before writing:
 
@@ -136,6 +156,8 @@ For each keyword, do not write a generic textbook definition. Explain it as a pr
 ```
 
 If the user supplied concrete implementation details, preserve them and organize them clearly. Examples include Redis Key formats, Lua scripts, SpEL expressions, cache names, queue names, thresholds, timeout values, window sizes, P99/P95 metrics, and class or component names.
+
+Preserve implementation details only when they help explain the design in an interview. Do not dump repo-local identifiers just because the source contains them. Prefer translating internal names into stable technical concepts, then mention the original name only in parentheses when it is necessary for accuracy.
 
 If details are missing, do not invent exact implementation. Use cautious wording such as `可以设计为...` only when proposing, or add `可补充细节：...` after the output.
 
@@ -218,6 +240,8 @@ After the package content, append one short refinement prompt asking the user wh
 - In resume bullets, prefer human-readable engineering descriptions over raw identifiers. Rewrite config file names, environment buckets, path fragments, variable names, internal model names, and folder conventions into natural Chinese descriptions whenever possible.
 - In resume bullets, avoid low-level identifiers such as `default/dev/test/prod.toml`, `MODULE_NAME`, `servers/{service}`, `create_app()`, `client/result/error`, or similar repo-local labels unless the user explicitly asks to keep source-level names.
 - When explaining technical terms, anchor every explanation to the project scenario. Avoid standalone encyclopedia definitions.
+- Use the style of a backend resume: "作为后端参与/负责..." for project descriptions when appropriate, and "针对...问题，设计...机制，实现/降低/提升..." for bullets. Do not write like a code walkthrough.
+- Do not overuse English identifiers. Common infrastructure terms such as `Redis`, `Kafka`, `P99`, `Trace`, `DAG`, and `RAG` are acceptable; repo-local names, case names, file names, variable names, and model nicknames should be translated or removed from resume bullets.
 
 ## What Not To Write
 
@@ -225,11 +249,20 @@ Avoid standalone bullets like:
 
 - `测试治理：项目包含 N 个测试文件、N 个测试用例，覆盖多个模块，保证核心契约稳定。`
 - `组件失败策略设计：围绕多个组件配置 abort、retry、empty_result 等策略，避免旁路故障影响主流程。`
+- `迁移验收体系：完成某工作流 29 节点/35 边拓扑迁移，单 case diff=0、边界 matched、13 项测试通过。`
+- `配置化编排设计：设计 MODULE_NAME 动态加载、多服务分层 TOML 配置、Agent 契约校验和 GraphBuilder 链式 DAG 构图机制。`
 - `页面开发：完成某某页面和某某组件开发。`
 - `框架接入：使用某框架完成某功能。`
 - `模块梳理：整理多个模块并补充文档。`
 
 These are usually weak from an interviewer's perspective. Rewrite them only if you can connect them to a bigger technical topic, such as execution lifecycle design, high-availability governance, performance optimization, fewer regressions, faster release validation, lower troubleshooting cost, or higher conversion/accuracy/stability.
+
+Weak verification details can be rewritten only when the architecture value is clear:
+
+- Weak: `完成单个迁移样例 diff=0，13 项测试通过。`
+- Stronger: `设计自动化回放与差异校验机制，用固定外部依赖、拦截写操作和边界比对验证新旧工作流语义一致性，降低复杂 Agent 迁移的回归风险。`
+
+Even the stronger version should be kept only if the project has enough material to explain why migration consistency is hard and how the validation system generalizes beyond one demo.
 
 Also avoid weak technical explanations like:
 
@@ -286,6 +319,8 @@ Before responding, verify:
 - Standalone failure strategy, fallback, and exception-handling bullets are removed or merged into stronger architecture/reliability points.
 - Each bullet maps to STAR logic.
 - Low-value inventory facts are removed or folded into stronger points.
+- Each resume bullet passes the interview-value gate; if it cannot support a real follow-up about architecture, performance, consistency, reliability, or maintainability, remove or merge it.
+- Resume bullets do not rely on repo-local English names, case names, node counts, edge counts, single-case diff results, or test counts as the main value.
 - At least one highlight contains a clear result; preferably all do.
 - Detailed technical names appear mainly in `技术架构`, `技术点拆解`, and `模拟面试 Q&A`, not as noisy implementation inventory inside resume responsibilities.
 - Resume bullets read like project experience for an interviewer, not like framework source comments or implementation notes.
