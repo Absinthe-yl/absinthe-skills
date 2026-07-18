@@ -1,0 +1,7 @@
+interface:
+  display_name: "简历优化"
+  short_description: "评分、深度润色、JD 定制与多格式导出简历"
+  default_prompt: "Use $resume-optimizer to score, polish, tailor, or export my resume (Chinese or English)."
+
+policy:
+  allow_implicit_invocation: true

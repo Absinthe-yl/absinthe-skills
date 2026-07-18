@@ -9,6 +9,7 @@
 | Skill | 用途 | 适合场景 |
 | --- | --- | --- |
 | `write-project-highlights` | 生成中文项目亮点、技术关键词拆解和面试问答 | 简历项目经历、实习项目包装、个人项目表达、根据代码库提炼亮点 |
+| `resume-optimizer` | 简历评分、40+ 项深度润色、JD 定制与多格式导出 | 简历评分与改写、按岗位定制提升匹配度、ATS 优化、导出 PDF/Word/HTML/LaTeX |
 | `read-project-architecture` | 快速初读陌生项目架构 | 接手新仓库、给 AI 编码工具建立项目地图、定位入口和核心模块 |
 | `record-ai-coding-daily` | 记录 AI 编码过程并生成日报/周报 | Codex、Claude、Cursor 等 AI 编码会话后的工作记录和汇总 |
 | `format-docs` | 将零散材料整理成中文规划/方案文档 | 技术方案、部署步骤、操作说明、会议纪要、路线规划 |
@@ -40,6 +41,12 @@
 │   ├── SKILL.md
 │   ├── PROMPT.md
 │   └── agents/openai.yaml
+├── resume-optimizer/
+│   ├── SKILL.md
+│   ├── agents/openai.yaml
+│   ├── references/
+│   ├── scripts/
+│   └── assets/
 ├── database-optimizer/
 │   ├── SKILL.md
 │   ├── agents/openai.yaml
@@ -103,6 +110,11 @@ Get-ChildItem -Path $src -Directory |
 ```
 
 ```text
+使用 $resume-optimizer，帮我评分并润色这份简历，再按目标岗位定制：
+...
+```
+
+```text
 使用 $absinthe-assistant，先判断这项任务应该走 Plan 还是 Craft，再切换到合适角色帮我完成。
 ```
 
@@ -113,6 +125,7 @@ Codex 也可以根据 `SKILL.md` 的 `description` 自动判断是否触发，�
 - `write-project-highlights/PROMPT.md` 是平台无关提示词，也可以直接给 Claude、Claude Code 或其他 AI 工具使用。
 - `mcp-builder` 内置 MCP server 交付规范、TypeScript 骨架参考和单文件 skeleton 生成脚本，适合从 0 到 1 起服务或改造现有服务。
 - `record-ai-coding-daily` 包含本地写入脚本，会在用户指定目录下维护工作记录、日报和周报。
+- `resume-optimizer` 内置百分制评分模型、40+ 项润色清单、JD 关键词覆盖脚本和 HTML 模板，适合简历评分、深度润色、按岗位定制与多格式导出。
 - `absinthe-assistant` 适合作为通用兜底 skill 和上层编排器，角色切换说明放在 `references/roles.md`。
 - 本仓库只提交可复用 skill 内容；本地工具配置目录如 `.claude/` 通常不应提交。
 
