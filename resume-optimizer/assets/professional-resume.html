@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>{{姓名}} - 简历</title>
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --muted: #555;
+    --accent: #1f3a5f;
+    --line: #d9d9d9;
+    --maxw: 800px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 32px 16px;
+    background: #f4f4f4;
+    color: var(--ink);
+    font-family: "Noto Serif CJK SC", "Songti SC", "SimSun", serif;
+    line-height: 1.6;
+  }
+  .page {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    background: #fff;
+    padding: 40px 48px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  header { border-bottom: 2px solid var(--accent); padding-bottom: 12px; margin-bottom: 20px; }
+  h1 { margin: 0; font-size: 26px; color: var(--accent); letter-spacing: 2px; }
+  .contact { margin-top: 6px; color: var(--muted); font-size: 13px; }
+  h2 {
+    font-size: 16px; color: var(--accent); border-left: 4px solid var(--accent);
+    padding-left: 8px; margin: 22px 0 10px;
+  }
+  .item { margin-bottom: 14px; }
+  .item .meta { display: flex; justify-content: space-between; font-weight: bold; font-size: 14px; }
+  .item .sub { color: var(--muted); font-size: 12px; margin: 2px 0 6px; }
+  ul { margin: 4px 0; padding-left: 20px; }
+  li { margin: 3px 0; font-size: 13.5px; }
+  .skill-group { margin: 6px 0; font-size: 13.5px; }
+  .skill-group b { color: var(--accent); }
+  @media print {
+    body { background: #fff; padding: 0; }
+    .page { box-shadow: none; max-width: none; padding: 24px 32px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <h1>{{姓名}}</h1>
+    <div class="contact">
+      电话：{{电话}} ｜ 邮箱：{{邮箱}} ｜ {{城市}} ｜ 求职意向：{{意向岗位}}
+    </div>
+  </header>
+
+  <section>
+    <h2>个人概述</h2>
+    <p>{{用 2–4 行概括核心经历、方向与量化成果钩子。}}</p>
+  </section>
+
+  <section>
+    <h2>实习经历</h2>
+    <div class="item">
+      <div class="meta"><span>{{公司}}｜{{岗位}}</span><span>{{起止时间}}</span></div>
+      <div class="sub">{{部门 / 事业群}}</div>
+      <ul>
+        <li>{{以强动词开头，含量化结果的职责与成果。}}</li>
+        <li>{{第二条。}}</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>项目经历</h2>
+    <div class="item">
+      <div class="meta"><span>{{项目名称}}</span><span>{{技术栈}}</span></div>
+      <ul>
+        <li>{{项目职责与量化成果。}}</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>教育背景</h2>
+    <div class="item">
+      <div class="meta"><span>{{学校}}｜{{专业}}</span><span>{{起止时间}}</span></div>
+      <div class="sub">{{学位 / 主修课程 / 荣誉（若突出）}}</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>技术能力</h2>
+    <div class="skill-group"><b>编程语言与基础：</b>{{Java、Python …}}</div>
+    <div class="skill-group"><b>服务端开发：</b>{{SpringBoot、MySQL …}}</div>
+    <div class="skill-group"><b>AI / Agent：</b>{{RAG、MCP …}}</div>
+  </section>
+
+  <section>
+    <h2>获奖情况</h2>
+    <ul>
+      <li>{{奖项名称与项目。}}</li>
+    </ul>
+  </section>
+</div>
+</body>
+</html>

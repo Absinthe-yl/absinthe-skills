@@ -1,0 +1,7 @@
+interface:
+  display_name: "Absinthe Assistant"
+  short_description: "通用能力基线与多角色任务编排"
+  default_prompt: "Use $absinthe-assistant to handle this open-ended task, switch roles, and deliver a polished result."
+
+policy:
+  allow_implicit_invocation: true

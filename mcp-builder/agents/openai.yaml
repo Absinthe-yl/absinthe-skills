@@ -1,0 +1,7 @@
+interface:
+  display_name: "MCP Server Builder"
+  short_description: "设计并实现可交付的 MCP Server"
+  default_prompt: "Use $mcp-builder to design and build a production-quality MCP server for my API, database, filesystem, or workflow integration."
+
+policy:
+  allow_implicit_invocation: true

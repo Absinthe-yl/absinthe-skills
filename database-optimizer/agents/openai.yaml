@@ -1,0 +1,7 @@
+interface:
+  display_name: "数据库优化"
+  short_description: "分析慢 SQL、执行计划、索引与 schema 设计，并给出安全迁移与连接池建议"
+  default_prompt: "Use $database-optimizer to diagnose slow SQL, interpret EXPLAIN ANALYZE, review indexes/schema, and propose safe database optimization steps."
+
+policy:
+  allow_implicit_invocation: true
