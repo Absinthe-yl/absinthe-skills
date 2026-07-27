@@ -1,0 +1,4 @@
+interface:
+  display_name: "MR Shishan Review"
+  short_description: "Review MR for shishan code smells"
+  default_prompt: "Use $mr-shishan-review to inspect this merge request for shishan code patterns, with concrete findings and cleanup suggestions."
