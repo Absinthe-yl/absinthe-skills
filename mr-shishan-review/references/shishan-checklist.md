@@ -124,7 +124,40 @@ Prefer:
 - One domain function per repeated behavior.
 - One reusable mapper or validator.
 
-## 6. Extra Smells Worth Commenting On
+## 6. Delete Redundant Wrappers
+
+Flag when the MR adds or preserves a wrapper whose only job is to forward, rename, copy, or expose an existing call or value.
+
+Look for:
+
+- A function that delegates every argument to one underlying function and returns its result unchanged.
+- A class with one dependency and methods that only mirror that dependency.
+- A result or state object that duplicates fields already available from the wrapped object.
+- Object -> wrapper -> underlying object chains with no validation, transformation, policy, ownership, or lifecycle behavior.
+- A one-off helper used by one caller that makes the call path longer without hiding meaningful complexity.
+
+Do not flag:
+
+- Adapters between genuinely different interfaces or domains.
+- Stable public/API boundaries that isolate compatibility changes.
+- Validation, invariant enforcement, authorization, retries, metrics, tracing, resource ownership, or lifecycle control.
+- Reusable policy shared by multiple callers.
+- Deliberate test seams where direct substitution is otherwise impractical.
+
+Why it matters:
+
+- Adds files, names, indirection, and navigation without reducing complexity.
+- Creates duplicate state or interfaces that can drift.
+- Makes ownership and the real execution path harder to see.
+- Encourages future logic to accumulate in the wrong layer.
+
+Prefer:
+
+- Delete the wrapper and call or store the underlying abstraction directly.
+- If a boundary is required, give it an explicit responsibility and keep that responsibility testable.
+- In review comments, name the direct replacement and the absent responsibility instead of saying only "over-encapsulated".
+
+## 7. Extra Smells Worth Commenting On
 
 Comment only when they are meaningfully present in the MR:
 
@@ -133,7 +166,7 @@ Comment only when they are meaningfully present in the MR:
 - One function doing validation, conversion, persistence, and side effects together.
 - Temporary data reshaping that exists only to satisfy a messy local design.
 
-## 7. Comment Quality Bar
+## 8. Comment Quality Bar
 
 Before leaving a finding, confirm all of the following:
 

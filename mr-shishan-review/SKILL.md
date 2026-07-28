@@ -1,6 +1,6 @@
 ---
 name: mr-shishan-review
-description: Review the current merge request, pull request, git diff, or changed files specifically for legacy-code smells and "shishan code" patterns. Use when Codex needs to inspect MR changes for avoidable maintainability debt such as write-time vs read-time filtering mistakes, repeated fully qualified namespaces in business logic, unnecessary serialization overhead caused by repeated serialization and deserialization, deeply nested or repetitive if branches that should be flattened, duplicated code that should be extracted, or similar low-quality patterns before merge.
+description: Review the current merge request, pull request, git diff, or changed files specifically for legacy-code smells and "shishan code" patterns. Use when Codex needs to inspect MR changes for avoidable maintainability debt such as write-time vs read-time filtering mistakes, repeated fully qualified namespaces in business logic, unnecessary serialization overhead caused by repeated serialization and deserialization, redundant pass-through wrappers that add no useful boundary or semantics, deeply nested or repetitive if branches that should be flattened, duplicated code that should be extracted, or similar low-quality patterns before merge.
 ---
 
 # MR Shishan Review
@@ -22,6 +22,7 @@ Treat the following as the primary smell categories:
 - Write dirty, read clean: data written into a database, cache, queue payload, or persistent object without normalization/filtering, then repeatedly filtered on read paths.
 - Namespace spam in business logic: repeated fully qualified class/module/package names inside the same logical block instead of import, alias, constant, helper, or local abstraction.
 - Unnecessary serialization overhead: repeated serialization and deserialization, or equivalent format conversion ping-pong, without crossing a real boundary such as storage, network, IPC, or framework contract.
+- Redundant wrappers: pass-through classes, functions, result objects, or state holders that only rename or forward an existing call/value without adding a stable boundary, invariant, validation, adaptation, lifecycle control, observability, reuse, or test seam. Prefer deleting the wrapper and using the underlying abstraction directly.
 - Nested if pyramids: control flow that can be flattened with guard clauses, early return, extracted predicates, or dispatch tables.
 - Copy-paste logic: repeated branches, transformations, validation, mapping, or side-effect orchestration that should be extracted into one function.
 
@@ -42,8 +43,9 @@ Also flag adjacent smells when they appear in MR code:
 4. Distinguish between justified duplication and bad duplication. Small duplication is acceptable when flows are genuinely diverging.
 5. Do not flag necessary serialization at system boundaries.
 6. When flagging repeated serialization and deserialization, explicitly state why it is unnecessary overhead rather than a required boundary conversion.
-7. Do not insist on abstraction unless it clearly reduces repeated logic or repeated domain knowledge.
-8. If a pattern is suspicious but not provable from the diff, say what must be verified instead of overstating.
+7. When flagging a redundant wrapper, identify the direct replacement and explain what the wrapper fails to add. Do not flag adapters, anti-corruption layers, compatibility boundaries, lifecycle/ownership controls, observability hooks, reusable policy enforcement, or deliberate test seams merely because their implementation is currently thin.
+8. Do not insist on abstraction unless it clearly reduces repeated logic or repeated domain knowledge.
+9. If a pattern is suspicious but not provable from the diff, say what must be verified instead of overstating.
 
 ## Output Format
 
