@@ -157,7 +157,24 @@ Prefer:
 - If a boundary is required, give it an explicit responsibility and keep that responsibility testable.
 - In review comments, name the direct replacement and the absent responsibility instead of saying only "over-encapsulated".
 
-## 7. Extra Smells Worth Commenting On
+## 7. Keep New Imports At Module Top Level
+
+Flag every Python import introduced inside a function, method, branch, loop, request path, or `try` block.
+
+Why it matters:
+
+- Hides dependencies and delays import failures until runtime.
+- Re-executes import statements on hot paths even when Python caches the module.
+- Can misattribute an import failure to the surrounding business operation.
+- Often conceals a circular dependency or optional-dependency boundary that should be modeled explicitly.
+
+Prefer:
+
+- Put new `import` and `from ... import ...` statements at module top level.
+- If moving the import exposes a cycle, refactor the dependency direction or extract a lower-level module.
+- If the dependency is optional, isolate it behind an explicit adapter/module boundary rather than importing it inside a function.
+
+## 8. Extra Smells Worth Commenting On
 
 Comment only when they are meaningfully present in the MR:
 
@@ -166,7 +183,7 @@ Comment only when they are meaningfully present in the MR:
 - One function doing validation, conversion, persistence, and side effects together.
 - Temporary data reshaping that exists only to satisfy a messy local design.
 
-## 8. Comment Quality Bar
+## 9. Comment Quality Bar
 
 Before leaving a finding, confirm all of the following:
 
